@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Strobe protocol framework</title>
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+</head>
+<body>
+    <h1><a href="/"><span class="sc">Strobe</span> protocol framework</a></h1>
+    <div id="nav">
+        <a href="/" class="here">overview</a>
+        <a href="/specs/">specification</a>
+        <a href="/examples/">example protocols</a>
+        <a href="/code/">code</a>
+        <a href="/papers/">papers</a>
+    </div>
+    
+    <h2>Version and changelog</h2>
+    <p>This is version 1.0.2 of the <span class="sc">Strobe</span> specification.
+        The software is in alpha.
+    </p>
+    <ul>
+        <li>January 24, 2017: version 1.0.2.  Fix the length of <var>S</var> in
+            the cSHAKE domain separation string.  Hopefully the last change
+            for this silly reason.</li>
+        <li>January 6, 2017: version 1.0.1.  Adjust, hopefully, to the final version
+            of the NIST cSHAKE standard.  The difference is how the empty
+            personalization string is encoded, and in the order of the <var>N</var>
+            and <var>S</var> strings.  The draft was ambiguous, but <var>N</var>
+            followed <var>S</var> and the empty string was probably best interpreted
+            as <code>[0]</code>.  The final version
+            changed it to <code>[1,0]</code> with <var>N</var> preceding <var>S</var>.
+            I'm still not sure I got it right because there are no test vectors.</li>
+        <li>January 3, 2017: version 1.0.0.</li>
+    </ul>
+    
+    <h2>Goals</h2>
+    <p>
+        The Internet of Things (IoT) promises ubiquitous, cheap, connected devices.
+        Unfortunately, most of these devices are hastily developed and will never
+        receive code updates. Part of the IoT's security problem is cryptographic,
+        but established cryptographic solutions seem too heavy or too inflexible
+        to adapt to new use cases.
+    </p>
+    <p>
+        <span class="sc">Strobe</span> is a new framework for cryptographic
+        protocols.  It can also be used for regular encryption.  Its goals are
+        to make cryptographic protocols much simpler to develop, deploy and analyze;
+        and to fit into even tiny IoT devices.  To that end, it uses only one block
+        function &mdash; <span class="sc">Keccak</span>-<i>f</i> &mdash; to encrypt
+        and authenticate messages.
+    </p>
+    <p>
+        Flexibility is an important goal of <span class="sc">Strobe</span>.  It isn't
+        just a replacement for TLS.  I specifically designed it to support
+        a wide variety of protocol building blocks: authenticated DH or FHMQV,
+        signatures, password-authenticated key exchange, DPA-resistant key diversification,
+        ratcheting for forward secrecy, and steganographic connections with length hiding.
+    </p>
+    <p>
+        Performance is a secondary goal.  <span class="sc">Strobe</span> is based
+        on SHA-3, or rather <span class="sc">Keccak</span>-<i>f</i> and cSHAKE
+        (draft NIST SP 800-185).  SHA-3 is a very conservative design.  It doesn't
+        yet have acceleration on most CPUs, and it isn't the fastest algorithm around.
+        That said, <span class="sc">Strobe</span> is generic and could be rebuilt
+        around a faster permutation once one appears.
+    </p>
+    <h2>Non-goals</h2>
+    <p>
+        Any framework has some rails.  <span class="sc">Strobe</span>'s main rails
+        are around message flow.  As a protocol framework, it isn't designed to handle
+        unreliable or out-of-order message delivery.  It can still be used as an
+        authenticated cipher, hash function, key derivation function etc. in these protocols.
+    </p>
+    <p>
+        <span class="sc">Strobe</span> isn't inherently nonce-misuse resistant.
+        However, it can be used in an SIV construction to add this property.
+    </p>
+</body>
+</html>

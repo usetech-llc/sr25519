@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Strobe protocol framework</title>
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+</head>
+<body>
+    <h1><a href="/"><span class="sc">Strobe</span> protocol framework</a></h1>
+    <div id="nav">
+        <a href="/">overview</a>
+        <a href="/specs/" class="here">specification</a>
+        <a href="/examples/">example protocols</a>
+        <a href="/code/">code</a>
+        <a href="/papers/">papers</a>
+    </div>
+
+    <h2>Scope</h2>
+    <p>This spec describes the operation of the <span class="sc">Strobe</span>
+        framework.  It only covers the symmetric portion.  For applications
+        including elliptic curve crypto, see the <a href="/examples/">examples</a>
+        page.
+    </p>
+    
+    <h2>Table of Contents</h2>
+    <div class="toc">
+        <h2><a href="#version">Version</a></h2>
+        <h2><a href="#defns">Definitions and notation</a></h2>
+        <h3><a href="#defns.fmt">Formatting</a></h3>
+        <h2><a href="#instances"><span class="sc">Strobe</span> Instances</a></h2>
+        <h2><a href="#params"><span class="sc">Strobe</span> parameters</a></h2>
+        <h2><a href="#object">State of a <span class="sc">Strobe</span> object</a></h2>
+        <h3><a href="#object.initial">Initial state</a></h3>
+        <h2><a href="#ops"><span class="sc">Strobe</span> operations</a></h2>
+        <h3><a href="#ops.bare">Low-level operations</a></h3>
+        <h4><a href="#ops.bare.ad"><code>AD</code>: Provide associated data</a></h4>
+        <h4><a href="#ops.bare.key"><code>KEY</code>: Provide cipher key</a></h4>
+        <h4><a href="#ops.bare.clr"><code>CLR</code>: Send or receive cleartext data</a></h4>
+        <h4><a href="#ops.bare.enc"><code>ENC</code>: Send or receive encrypted data</a></h4>
+        <h4><a href="#ops.bare.mac"><code>MAC</code>: Send or receive message authentication code</a></h4>
+        <h4><a href="#ops.bare.prf"><code>PRF</code>: Extract hash / pseudorandom data</a></h4>
+        <h4><a href="#ops.bare.ratchet"><code>RATCHET</code>: Prevent rollback</a></h4>
+        <h3><a href="#ops.flags">Operations and flags</a></h3>
+        <h4><a href="#ops.flags.table">Flags for the defined operations</a></h4>
+        <h3><a href="#ops.comp">Composite operations</a></h3>
+        <h2><a href="#ops.impl">Implementation of operations</a></h2>
+        <h3><a href="#ops.impl.runf">Duplexing and running <var>F</var></a></h3>
+        <h3><a href="#ops.impl.init">Initialization</a></h3>
+        <h3><a href="#ops.impl.begin">Beginning an operation</a></h3>
+        <h3><a href="#ops.impl.byte">Main operation code</a></h3>
+    </div>
+    
+    <h2 id="version">Version</h2>
+    <p>This specification describes <span class="sc">Strobe</span> version 1.0.2.
+        It has been revised for clarity since that version was released.  Special thanks
+        to David Wong for his feedback on the specification.
+    </p>
+    
+    <h2 id="defns">Definitions and notation</h2>
+    <p><span class="sc">Strobe</span> is useful for building both symmetric cryptosystems
+        and protocols.  For simplicity, these are both referred to as "protocols".  For example,
+        in an encryption protocol, Alice sends an encrypted and authenticated message to Bob, but Bob
+        does not send any messages back.
+    </p>
+    
+    <p><span class="sc">Strobe</span> protocols exchange data over some sort of
+        <em>transport</em>.  For most protocols 
+    </p>
+    
+    <p>To disambiguate the two parties of a network protocol, <span class="sc">Strobe</span>
+        assigns them each a role as an <em>initiator</em> or <em>responder</em>.
+    </p>
+    <ul><li>
+        A party to a protocol is the <em>initiator</em> if it sent
+        a message to the transport before receiving any messages from the transport.
+    </li><li>
+        A party is the <em>responder</em> if it received a message from the transport before
+        sending any messages to the transport.
+    </li><li>A party which has neither sent nor received any messages is <em>undecided</em>.
+    </li></ul>
+    <p>Parties start out as undecided, and become an initiator or responder if and when
+        they send or receive a message via the transport.</p>
+    
+    <p><span class="sc">Strobe</span> operates exclusively on bytes, which are elements
+        of the set [0,...,255].  However, sometimes a length field is required which is
+        larger than one byte.  Furthermore, in extensions of <span class="sc">Strobe</span>,
+        such as the key tree, we will need elements smaller than one byte.  In either case,
+        <span class="sc">Strobe</span> follows a little-endian convention.
+    </p>
+    <h3 id="defns.fmt">Formatting</h3>
+    <p>Variables are formatted like <var>this</var>.</p>
+    <p><code>Inline code is formatted like this.</code></p>
+    <pre>Blocks of code are formatted like this.</pre>
+    <p class="comment">Non-normative comments are formatted like this.</p>
+    <p class="warning">Non-normative warnings are formatted like this.</p>
+    
+    <h2 id="instances"><span class="sc">Strobe</span> Instances</h2>
+    <p>There are several paremeters in the <span class="sc">Strobe</span> framework.
+        It can use many different rates, permutations and padding modes.  These
+        are detailed in the <a href="/papers">paper</a>.  This specification
+        only describes the following recommended instances:
+    </p>
+    <ul><li>
+        <span class="sc">Strobe</span>-128/1600 and <span class="sc">Strobe</span>-256/1600
+        for standards compliance. 
+    </li>
+    <li>
+        <span class="sc">Strobe</span>-128/800 and <span class="sc">Strobe</span>-256/800
+            for 32-bit microcontrollers.
+    </li>
+    <li>
+        <span class="sc">Strobe</span>-128/400 for 16-bit microcontrollers and small hardware.
+    </li></ul>
+
+    <p class="comment">
+        <span class="sc">Strobe</span>-128/1600 and <span class="sc">Strobe</span>-256/1600
+        are based on the <a href="http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-185.pdf">
+        cSHAKE specification</a> from NIST.
+    </p>
+        
+    
+    <h2 id="params"><span class="sc">Strobe</span> parameters</h2>
+    <p>Let <var>b</var> be either 400, 800 or 1600.  Let <var>F</var> be the function
+        <span class="sc">Keccak</span>-<i>f</i>[<var>b</var>].  Let <var>N</var> =
+        <var>b</var>/8.  <span class="sc">Strobe</span> treats
+        <var>F</var> as a function which takes as input an array of <var>N</var> bytes
+        and returns another array of <var>N</var> bytes.
+    </p>
+    <p>
+        Let <var>sec</var> be a target security level, either 128 or 256 bits.
+        <span class="comment">
+            <span class="sc">Strobe</span> has 2*<var>sec</var> bits of
+            secret state.  As a result, it is somewhat stronger than a block cipher with
+            <var>sec</var>-bit key.  Depending on the exact protocol,
+            it may achieve security comparable to a 2*<var>sec</var>-bit
+            block cipher (as in <a href="https://eprint.iacr.org/2014/">this paper</a>).
+            In other scenarios &mdash; particularly when used as an unkeyed hash &mdash;
+            it only has <var>sec</var> bits of security.
+            A future version might add a way to change the rate after a key has been
+            entered.
+        </span>
+    </p>
+    <p>Let <var>R</var> = <var>N</var> - (2*<var>sec</var>)/8 - 2.  This will be the number
+        of bytes in a <span class="sc">Strobe</span> block.  It is required that
+        1 &leq; <var>R</var> &lt; 254.  This means that <var>b</var> = 400 is incompatible
+        with <var>sec</var> = 256.
+        <span class="comment">
+            Obviously <var>R</var> &geq; 1 is required so that <span class="sc">Strobe</span>
+            can get any work done at all.  The requirement that <var>R</var> &le; 254 is
+            so that offsets can be represented in one byte.  In the existing protocol, this
+            can result in offsets up to <var>R</var>, which would imply that <var>R</var> &le; 255.
+            The requirement <var>R</var> &le; 254 is a hedge to allow future modifications.
+            In any case, it is automatically true for any <span class="sc">Keccak</span>-based
+            protocol, because <var>R</var> &lt; 1600/8 = 200.
+        </span>
+    </p>
+    <p>Let <var>X</var>, <var>Y</var> and <var>Z</var> be single digits, representing a
+        major, minor and patch version of <span class="sc">Strobe</span>.
+    </p>
+    <p>
+        The parameters below define the protocol framework called
+        "<span class="sc">Strobe</span>-<span class="sc">Keccak</span>-<var>sec</var>/<var>b</var>-v1.0.2",
+        which is abbreviated to "<span class="sc">Strobe</span>-<var>sec</var>/<var>b</var>".
+        In general, the name would be 
+        "<span class="sc">Strobe</span>-<var>F</var>-<var>sec</var>/<var>b</var>-v<var>X</var>.<var>Y</var>.<var>Z</var>".
+    </p>
+    
+    <h2 id="object">State of a <span class="sc">Strobe</span> object</h2>
+    <p>A <span class="sc">Strobe</span> object has the following state variables:
+    </p> 
+    <ul class="wide">
+    <li>A duplex state <var>st</var>, which is an array of <var>N</var> bytes.</li>
+    <li>A position <var>pos</var>, where 0 &le;
+            <var>pos</var> &le; <var>R</var>.
+        This is the position in the duplex state where the next byte will be processed.
+    </li>
+    <li>A position <var>pos<sub>begin</sub></var>, where 0 &le;
+        <var>pos<sub>begin</sub></var> &le; <var>R</var>.
+        This is the position in the duplex state which is 1 after the beginning of
+        the current operation, or 0 if no operation began in this block.
+    </li>
+    <li>A variable <var>I<sub>0</sub></var> which is 0, 1 or <code>None</code>.
+        This variable describes the role of this party in the protocol.  The role
+        begins as <em>undecided</em> (<var>I<sub>0</sub></var> = <code>None</code>),
+        and stays that way until the party either sends or receives a message on
+        the transport.  At that point the party's role becomes <em>initiator</em>
+        (with <var>I<sub>0</sub></var> = 0) if it sent the message, or <em>responder</em>
+        (<var>I<sub>0</sub></var> = 1) if it received the message.
+        <span class="comment">
+            The purpose of <var>I<sub>0</sub></var> is to keep protocol transcripts
+            consistent.  <span class="sc">Strobe</span> hashes not only the messages
+            that are sent, but also metadata about who sent them.  It would be no good if
+            Alice hashed "I sent a message" and Bob hashed "I received a message", because
+            their hashes would be different.  Instead, they hash metadata amounting to
+            "The initiator sent this message" or "the responder sent this message.
+        </span>
+    </li>
+    <h3 id="object.initial">Initial state</h3>
+    <p>The initial state of the object is as follows:</p>
+    <ul class="wide">
+    <li><code><var>st</var> = <var>F</var>( [0x01, <var>R</var>+2, 0x01, 0x00, 0x01, 0x60] +
+        ascii("STROBEv<var>X</var>.<var>Y</var>.<var>Z</var>"))
+    </code>
+    <span class="comment">
+        Here <code>+</code> denotes concatenation, as in Python.
+        The <var>X</var>,
+        <var>Y</var>, and <var>Z</var> are the major, minor and patch
+        version of the <span class="sc">Strobe</span> protocol.
+        The trailing <code>...</code> is means enough zeros to fill out
+        the domain of the function <var>F</var>
+    </span>
+    <span class="comment">
+        This format is chosen for compatibility with
+            <a href="http://csrc.nist.gov/publications/drafts/800-185/sp800_185_draft.pdf">cSHAKE</a>.
+        The description of the initial state involves multiple calls to <var>F</var>
+        if <var>R</var> is less than 15 bytes,
+        but this isn't the case for any of the recommended instances.  The
+        <a href="#ops.impl.init">Python code below</a> covers the general case.
+    </span>
+    </li>
+    <li><code><var>pos</var> = <var>pos<sub>begin</sub></var> = 0</code></li>
+    <li><code><var>I<sub>0</sub></var> = None</code></li>
+    </ul>
+    <p>Following this initialization, the first operation must be a <code>meta-AD</code>
+        operation whose data is a protocol-specific string.  This separates
+        <span class="sc">Strobe</span> instances from each other.  This operation is also
+        known as customization, personalization, domain separation or diversification.
+    </p>
+    
+    <h2 id="ops"><span class="sc">Strobe</span> operations</h2>
+    <p>A <span class="sc">Strobe</span> protocol execution is composed of a sequence of
+        <em>operations</em>.  There may be any number of operations in any order.
+        Which operations are performed may be determined at runtime.  Each operation can
+        process an arbitrary amount of data, but always in multiples of one byte.  The data is
+        processed in a streaming fashion, one byte at a time.  The protocol can determine
+        the amount of data to process on the fly, even after an operation has begun.
+        In python notation, the sequence
+        <pre>
+<var>strobe</var>.send_ENC("A long");
+<var>strobe</var>.send_ENC(" message",more=True);
+</pre>
+        will do exactly the same thing as  
+<pre><var>strobe</var>.send_ENC("A long message");</pre>
+        but <b>not</b> the same thing as 
+<pre>
+<var>strobe</var>.send_ENC("A long");
+<var>strobe</var>.send_ENC(" message");
+</pre>
+        This last piece of code performs two separate <code>ENC</code> operations, whereas
+        the others each only do one operation.
+    </p>
+    <p>
+        <span class="sc">Strobe</span>'s operations are low-level, and a protocol
+        will be a combination of many of them.
+        For example, an AEAD system might be comprised of a key (<code>KEY</code>),
+        an associated datum (<code>AD</code>), an encrypted message
+        (<code>ENC</code>) and a
+        message authentication code (<code>MAC</code>).  It might use further operations
+        for framing, context and metadata.  This specification first describes the operations, and then
+        recommends how to combine them.
+    </p>
+    <p>
+        <span class="sc">Strobe</span> is based on <span class="sc">Keccak</span>-<i>f</i>.
+        <span class="sc">Keccak</span>-<i>f</i> is somewhat slow in software, and it can have
+        a rather wide block size &emdash; up to 168 bytes of rate.  <span class="sc">Strobe</span>
+        operations may be rather small.  In particular, they are used for framing data,
+        which is generally only a few bytes.  To reduce overhead, <span class="sc">Strobe</span>
+        packs multiple operations into one block when possible.  It is not always possible,
+        though.  In particular, operations such as <code>ENC</code> and <code>MAC</code>
+        must produce output that depend on all previous inputs.  For such operations,
+        <span class="sc">Strobe</span> runs <var>F</var> and begins a new block.
+    </p>
+    <p class="comment">
+        The paper specifies a variant, called &quot;<span class="sc">Strobe</span> lite&quot;,
+        which always begins a new block for every new operation.  This is designed for
+        lightweight hardware, where <var>F</var> is probably much smaller and there is
+        little gain from packing multiple operations into one block.
+    </p>
+
+    <h3 id="ops.bare">Low-level operations</h3>
+    <p><span class="sc">Strobe</span> supports 7 low-level operations.  Of these,
+        the 3 which use the transport exist in <code>send</code> and <code>recv</code>
+        directions.
+    </p>
+    <p class="comment">
+        If Alice sends a message to Bob, Alice will use a <code>send</code> operation
+        (such as <code>send_ENC</code>) and Bob will use the corresponding <code>recv</code>
+        operation (<code>recv_ENC</code>).  <span class="sc">Strobe</span> takes this into
+        account when hashing the operations, so that Alice's duplex state will match Bob's
+        when they execute corresponding operations.
+    </p>
+    <p>
+        For any operation, there is a corresponding "<code>meta</code>" variant.  The
+        <code>meta</code> operation works exactly the same way as the ordinary operation.
+        The two are distinguished only in an "<code>M</code>" bit that is hashed into
+        the protocol transcript for the <code>meta</code> operations.  This is used to
+        prevent ambiguity in protocol transcripts.  This specification describes uses
+        for certain <code>meta</code> operations.  The others are still legal,
+        but their use is not recommended.
+        The usage of the <code>meta</code> flag is described below in
+        <a href="#ops.comp">Section 6.3</a>.
+    </p>
+    <p>The operations are:</p>
+    <ul>
+        <li><a href="#ops.bare.ad"><code>AD</code>: Provide associated data</a></li>
+        <li><a href="#ops.bare.key"><code>KEY</code>: Provide cipher key</a></li>
+        <li><a href="#ops.bare.clr"><code>CLR</code>: Send or receive cleartext data</a></li>
+        <li><a href="#ops.bare.enc"><code>ENC</code>: Send or receive encrypted data</a></li>
+        <li><a href="#ops.bare.mac"><code>MAC</code>: Send or receive message authentication code</a></li>
+        <li><a href="#ops.bare.prf"><code>PRF</code>: Extract hash / pseudorandom data</a></li>
+        <li><a href="#ops.bare.ratchet"><code>RATCHET</code>: Prevent rollback</a></li>
+    </ul>
+    <p>This section describes the rough behavior of these operations, not how they are
+        implemented.  The exact behavior and implementation are described
+        in <a href="#ops.impl">Section 7</a>.  Each operation also lists the flags
+        which describe it.  Their meaning is described in <a href="#ops.flags">Section 6.2</a>.
+    </p>
+    
+    <h4 id="ops.bare.ad"><code>AD</code>: Provide associated data</h4>
+    <div class="impl">
+    <ul>
+        <li>Flags: <code>A</code>.
+        <li>Behavior: Xor bytes of the associated data into the state.</li>
+    </ul>
+    </div>
+    <p>The <code>AD</code> operation adds associated data to the state.
+        This data must be known to both parties, and will not be transmitted.
+        Future outputs from the <span class="sc">Strobe</span> object will depend
+        on the supplied data.
+    </p>
+        <ul><li>A <code>meta_AD</code> operation describes the protocol's interpretation
+            of the following operation.</li></ul>
+    
+    <h4 id="ops.bare.key"><code>KEY</code>: Provide cipher key</h4>
+    <div class="impl">
+    <ul>
+        <li>Flags: <code>AC</code>.
+        <li>Behavior: Run <var>F</var> to begin a new block, then overwrite bytes of the state with bytes of the key.</li>
+    </ul>
+    </div>
+    <p>The <code>KEY</code> operation sets a symmetric key.
+        If there is already a key, the new key will be cryptographically combined with it.
+        This key will be used to produce all future cryptographic outputs from
+        the <span class="sc">Strobe</span> object.
+    </p>
+        <div class="comment">
+            Every crypto operation in <span class="sc">Strobe</span> depends on a running
+            hash of all data which has been entered into it.  As a result, the
+            <code>KEY</code> operation has very similar semantics to <code>AD</code>.
+            Both of them absorb data without transmitting it, and affect all future operations.
+            That said, <code>KEY</code> differs from <code>AD</code> in three ways:
+            <ul><li><code>KEY</code> ratchets the state to preserve forward secrecy.
+                It does this by overwriting
+                state bytes with the new key instead of xoring.  This mitigates attacks
+                if an attacker somehow compromises the application later.
+                <span class="sc">Strobe</span> doesn't do this with most other operations,
+                such as <code>AD</code>, because it would slightly reduce the entropy of the state.
+            </li>
+            <li><code>KEY</code> starts a new block internally.  This is needed for ratcheting,
+                and might also help with a future
+                security analysis in the standard model.</li>
+            <li>Future authors might want to incorporate some of
+                <span class="sc">Strobe</span>'s operations into their protocol frameworks.
+                If those frameworks don't use sponges, they will need to handle
+                <code>KEY</code> differently from <code>AD</code>.</li>
+            </ul>
+        </div>
+    
+    <h4 id="ops.bare.clr"><code>CLR</code>: Send or receive cleartext data</h4>
+    <div class="impl">
+    <ul>
+        <li>Flags: <code>AT</code> or <code>IAT</code>.
+        <li>Behavior: send or receive plaintext data, and xor it into the state.</li>
+    </ul>
+    </div>
+    <p><code>send_CLR</code> sends a message in clear text.
+        <code>recv_CLR</code> receives a message in clear text.
+    </p>
+        <ul>
+        <li><code>send_meta_CLR</code> and <code>recv_meta_CLR</code>
+            are used to send and receive framing data.
+        </ul>
+        <p class="warning">
+            The <code>recv_CLR</code> and <code>recv_meta_CLR</code> operations don't verify
+            the integrity of the
+            incoming message.  For this, follow <code>send_CLR</code> with <code>send_MAC</code>
+            on the sending side,
+            and follow <code>recv_CLR</code> with <code>recv_MAC</code> on the receiving side.
+            <br/><br/>
+            In some scenarios, one cannot check a MAC for protocol or performance
+            reasons.  For example, until the two parties share a secret key, a MAC defends only
+            against accidental corruption and not against malicious modification.
+            <br/><br/>
+            <span class="sc">Strobe</span> explicitly supports MACs on framing data.  However,
+            to save bandwidth, most protocols do not MAC their framing data until they have
+            sent/received the framed data as well.  This means that extra care must be used
+            with framing data, especially lengths.
+        </p>
+    
+    <h4 id="ops.bare.enc"><code>ENC</code>: Send or receive encrypted data</h4>
+    <div class="impl">
+    <ul>
+        <li>Flags: <code>ACT</code> or <code>IACT</code>.
+        <li>Behavior of <code>send-ENC</code>: Run <var>F</var> to begin a new block.
+            Xor the plaintext with the state, which produces
+            both a new state and a ciphertext.  Send the ciphertext to the other party.</li>
+        <li>Behavior of <code>recv-ENC</code>: Run <var>F</var> to begin a new block.
+            Receive a ciphertext, and xor it with the state
+            to obtain a plaintext.  Bytes of the state are overwritten by bytes of the ciphertext.</li>
+    </ul>
+    </div>
+    <p><code>send_ENC</code> encrypts a message and sends it to the transport.
+        <code>recv_ENC</code> receives a message from the transport and decrypts it.
+        The encryption does not include authentication.  The length of the encrypted
+        message is the same as the length of the plaintext message.
+    </p>
+        <ul>
+        <li><code>send_meta_ENC</code> and <code>recv_meta_ENC</code>
+            are used for encrypted framing data.
+        </ul>
+
+    <p><span class="sc">Strobe</span>'s encryption mode keeps the message confidential
+        (except for its length)
+        so long as the session transcript up to this point is <em>secret</em> and,
+        for the sender, <em>unique</em>.
+    </p>
+    <ul><li>
+        <em>Secret</em> means that the adversary must not be able to
+        guess the transcript's contents.
+    <li><em>Unique</em> means that the adversary must not be able to make the transcript
+        match up to a <code>send_ENC</code> operation.  This requires nonces, unless the
+        protocol has already exchanged one-time-use ephemeral keys.
+    </li>
+    <li><code>recv_ENC</code> doesn't require uniqueness for security, so long as a
+        <code>recv_MAC</code> operation is run before the received data is used.
+    </li>
+    </ul>
+    <p class="warning">
+        The <code>recv_ENC</code> and <code>recv_meta_ENC</code> operations don't verify
+        the integrity of the
+        incoming message.  For this, use <code>send_MAC</code> after <code>send_ENC</code>
+        on the sending side,
+        and <code>recv_MAC</code> after <code>recv_ENC</code> on the receiving side.
+        The receiving side must run
+        <code>recv_MAC</code> before using the decrypted message.
+    </p>
+    <p class="warning">
+        Newcomers to cryptography often assume that an attacker can't modify encrypted
+        messages without turning them into gibberish.  This isn't true for most cipher
+        modes, and it isn't true for <span class="sc">Strobe</span>.  The
+        <code>MAC</code> operation really is necessary.
+    </p>
+    <p class="warning">
+        <span class="sc">Strobe</span>'s encryption mode requires unique nonces for
+        security.
+        In other words, the operations before the <code>ENC</code> operation
+        must be unique.  In a two-party protocol, make sure that a party has
+        contributed a unique value (such as a random nonce or a Diffie-Hellman ephemeral)
+        to the protocol before using <code>send_ENC</code>.  It is not necessary to
+        contribute a unique value before using <code>recv_ENC</code>, except to
+        defend against physical side channels such as DPA.
+    </p>
+    <p class="comment">
+        Protocols are allowed to use <code>ENC</code> before any <code>KEY</code> has
+        been entered.  This usually isn't secure as an encryption mode.  For technical
+        reasons, the recommended <a href="/examples/#todo">Schnorr signature mode</a>
+        does this whether or not a key has been entered.
+    </p>
+    
+    <h4 id="ops.bare.mac"><code>MAC</code>: Send or receive message authentication code</h4>
+    <div class="impl">
+    <ul>
+        <li>Flags: <code>CT</code> or <code>ICT</code>.
+        <li>Behavior of <code>send-MAC</code>: Run <var>F</var> to begin a new block.
+            Send bytes the state to the other party.</li>
+        <li>Behavior of <code>recv-ENC</code>: Run <var>F</var> to begin a new block.
+            Receive bytes and check that they are the same as the bytes of your state.
+            If not, then the session has been corrupted.</li>
+    </ul>
+    </div>
+    <p><code>send_MAC</code> computes and sends a message authentication code (MAC).
+        <code>recv_MAC</code> receives and checks a MAC. If the MAC doesn't match,
+        the receiving party aborts the protocol.
+    </p>
+        <ul>
+        <li><code>send_meta_MAC</code> and <code>recv_meta_MAC</code> do the same thing
+            as <code>send_MAC</code> and <code>recv_MAC</code>.  They are appropriate
+            for checking the integrity of framing data.
+        </ul>
+    
+        <p class="warning">
+            A <code>MAC</code> operation is ineffective if it is too short.  That is,
+            an adversary can just guess a <var>B</var>-byte MAC value with probability
+            2<sup>-8B</sup>.  A 16-byte or longer MACs is suitable for
+            protocols on powerful devices, and 8-byte or longer MAC is suitable for
+            constrained devices.  Very constrained environments might use even shorter
+            MACs, but be aware that a short MAC may be practical to guess.
+            <br/><br/>
+            When retrofitting security on top of legacy embedded protocols, designers
+            might not have enough bits to send a secure <code>MAC</code>.  It is possible
+            to send a shorter <code>MAC</code> in each packet, with the hope that an
+            attack will be detected within a few packets.  The <span class="sc">Strobe</span>
+            framework allows this, but of course it is very dangerous.
+            Don't try it without an expert analysis.
+        </p>
+        <p class="warning" id="warn.sidechannel">
+            Checking a MAC must be done in constant time to prevent side-channel attacks.
+            This is particularly salient when checking a MAC that is streaming in one byte
+            at a time.  It is very important not to indicate an error until the
+            MAC operation is actually complete.  Otherwise an attacker will learn information
+            about the correct MAC.  If the attacker can make several attempts, this side channel
+            will lead to an easy compromise.
+        </p>
+        <p class="warning">
+            Data isn't automatically trustworthy just because it has been MAC'd or signed.
+            At most, the MAC will indicate who sent the data.  But that other party might
+            still be evil, or might have been compromised.
+        </p>
+        <p class="comment">
+            <span class="sc">Strobe</span>'s operations all support byte-by-bytes streaming,
+            and do not
+            require that the length be known in advance.  The MAC operation is no exception.
+            That means in particular that truncating a MAC produces a valid, shorter MAC.
+            This problem can and should be avoided by using a composite operation which
+            includes the MAC's length in the metadata, so that the MAC will depend on its
+            length.
+            <br/><br/>
+            However, this note doesn't rise to the level of a warning.  Most protocols will
+            use fixed-length MACs, but some will not.  Suppose the two parties somehow
+            disagree on how long their MACs are.  Suppose that Bob thinks the MACs are 8
+            bytes, but Alice thinks they're 10 bytes.  Then the first message that Alice sends to
+            Bob will verify with a truncated MAC, but any message that either sends later
+            in the protocol will fail, because of the different transcript before that point.
+            This is unlikely to cause a huge security problem.
+            <br/><br/>
+            The reverse direction is also problematic: if Alice thinks the MACs are 8 bytes,
+            but Bob thinks they're 10 bytes, then an attacker can extend Alice's MAC to
+            one that Bob will accept with probability 2^-16.  Again, any future MAC will
+            fail with high probability.
+        </p>
+
+        <p class="comment"><span class="sc">Strobe</span>'s <code>MAC</code> operations
+            don't require session uniqueness.
+            Repeating a nonce will compromise <code>send_ENC</code>, but (unlike AES-GCM
+            and Poly1305) it will not compromise <code>send_MAC</code> or <code>recv_MAC</code>.
+            <br/><br/>
+            This only applies to attackers trying to find <code>MAC</code>s on
+            new data.  If an attacker replays the same <code>MAC</code> after the same
+            data in an identical session, then of course the <code>MAC</code> will verify.
+        </p>
+    
+    <h4 id="ops.bare.prf"><code>PRF</code>: Extract hash / pseudorandom data</h4>
+    <div class="impl">
+    <ul>
+        <li>Flags: <code>IAC</code>.
+        <li>Behavior: Run <var>F</var> to begin a new block.  Read bytes of the state
+            out to the application.</li>
+    </ul>
+    </div>
+    <p><code>PRF</code> extracts pseudorandom data which is a deterministic function of
+        the state.  This data can be treated as a hash of all preceeding operations,
+        messages and keys.  For example, the following code hashes a single block of data:
+<pre><var>strobe</var> = new strobe(proto="example hash")
+<var>strobe</var>.AD("message to be hashed")
+<var>the_hash</var> = <var>strobe</var>.PRF(output_length)</pre>
+    </p>
+    <p>One can also hash multiple blocks of data, for example:
+<pre><var>strobe</var> = new strobe(proto="example hash")
+<var>strobe</var>.AD("message to")
+<var>strobe</var>.AD(" be")
+<var>strobe</var>.AD(" hashed")
+<var>the_hash</var> = <var>strobe</var>.PRF(output_length)</pre>
+        which produces a different result from the previous example, because
+        <span class="sc">Strobe</span> hashes where the operations begin and end in
+        addition to their data.
+    </p>
+    <p class="warning">
+        Just as with a <code>MAC</code>, the <code>PRF</code> operation supports streaming,
+        and a shorter <code>PRF</code> call will return a prefix of a longer one.  Use
+        a <a href="#ops.comp">composite operation</a> that inputs the length of the
+        <code>PRF</code> first.
+    </p>
+
+    
+    <h4 id="ops.bare.ratchet"><code>RATCHET</code>: Prevent rollback</h4>
+    <div class="impl">
+    <ul>
+        <li>Flags: <code>C</code>.
+        <li>Behavior: Run <var>F</var> to begin a new block.  Then overwrite bytes of the
+            state with zeros.</li>
+    </ul>
+    </div>
+    <p><code>RATCHET</code> has no input other than a length <var>L</var>, and no output.
+        Instead, it modifies the state in an irreversible way.
+    </p>
+    <p>
+        <span class="sc">Strobe</span>'s <var>F</var> is <span class="sc">Keccak</span>-<i>f</i>,
+        which is a permutation.  If an attacker compromises the state at some point
+        in the protocol (e.g. with a side channel attack or an application exploit), then the
+        attacker can use <var>F<sup>-1</sup></var> to solve for states at earlier points
+        in the protocol.
+    </p>
+    <p>The <code>RATCHET</code>
+        operation prevents this by zeroizing <var>L</var> bytes of the state.
+        Zeroizing the whole state would destroy the key, so <code>RATCHET</code> only
+        zeroizes up to <var>R</var> bytes at a time, calling <var>F</var> in between.
+        In order to reverse the
+        <code>RATCHET</code> operation, the attacker
+        would have to guess what the bytes were before zeroizing.  Setting
+        <var>L</var> = <var>sec</var>/8 bytes is sufficient when <var>R</var> &geq;
+        <var>sec</var>/8.  That is, set <var>L</var> to 16 bytes or 32 bytes for 
+        <span class="sc">Strobe</span>-128/<var>b</var> and
+        <span class="sc">Strobe</span>-256/<var>b</var>, respectively.
+    </p>
+    <p class="comment">
+        If <var>L</var> is set to a very large number, then this operation wastes time
+        by calling <var>F</var> many times in a row.  This makes it suitable for a
+        password-based key derivation function (PBKDF), with security comparable
+        to PBKDF2.
+        <br/><br/>
+        Modern PBKDFs such as scrypt and Argon2 are designed to be memory-hard, meaning
+        that they require a large memory with high bandwidth to perform efficiently.
+        Memory hardness makes it harder to guess passwords by brute force using GPUs or ASICs.
+        Using <code>RATCHET</code> as a PBKDF isn't memory-hard.  But of course, a tiny
+        device with constrained memory can't efficiently compute a memory-hard function,
+        so this may be the best you can do.
+    </p>
+    <p class="comment">
+        For all the recommended <span class="sc">Strobe</span> variants, <var>R</var> &ge;
+        <var>sec</var>/8.  In non-recommended variants with <var>R</var> &lt; <var>sec</var>/8, this
+        operation is ineffective at preventing rollback
+        because it only erases <var>R</var> bytes at a time.  Instead,
+        extract <var>L</var> bytes using <code>PRF</code>, and then stir them back in
+        with <code>KEY</code>.  In this scenario, <code>RATCHET</code> is still suitable
+        to waste time, but the <code>PRF/KEY</code> ratcheting operation must be used
+        afterward to prevent rollback.
+    </p>
+    
+    <h3 id="ops.flags">Operations and flags</h3>
+    <p>
+        The behavior of each of <span class="sc">Strobe</span>'s operations is defined
+        completely by 6 features, called <em>flags</em>.  The operation is encoded as
+        one byte, where the least significant 6 bits are its flags.  The flags and
+        their encodings are as follows:
+    </p>
+    <ul class="wide">
+        <li><code>I = 1&lt;&lt;0</code>, "inbound".  If set, this flag means that the
+            operation moves data from the transport, to the cipher, to the application.
+            An operation without the <code>I</code> flag set is said to be "outbound".
+            The <code>I</code> flag is clear on all <code>send</code> operations,
+            and set on all <code>recv</code> operations.
+            <span class="comment">
+                If Alice sends a message to Bob, then it is outbound for Alice and inbound
+                for Bob.
+            </span>
+        </li>
+        <li><code>A = 1&lt;&lt;1</code>, "application".  If set, this flag means that
+            the operation has data coming to or from the application side.
+            <ul><li>An operation with <code>I</code> and <code>A</code> both set outputs
+            bytes to the application.</li><li>An operation with <code>A</code> set but <code>I</code>
+            clear takes input from the application.</li></ul>
+        </li>
+        <li><code>C = 1&lt;&lt;2</code>, "cipher".  If set, this flag means that the
+            operation's output depends cryptographically on the <span class="sc">Strobe</span>
+            cipher state.  For operations which don't have <code>I</code> or <code>T</code> flags
+            set, neither party produces output with this operation.  In that case, the
+            <code>C</code> flag instead means that the operation acts as a rekey or ratchet.
+        </li>
+        <li><code>T = 1&lt;&lt;3</code>, "transport".  If set, this flag means that the
+            operation sends or receives data using the transport.  An operation has
+            <code>T</code> set if and only if it has <code>send</code> or <code>recv</code>
+            in its name.
+            <ul><li>An operation with <code>I</code> and <code>T</code> both set
+            receives data from the transport.</li>
+            <li>An operation with <code>T</code> set but <code>I</code>
+            clear sends data to the transport.</li></ul>
+        </li>
+        <li><code>M = 1&lt;&lt;4</code>, "meta".  If set, this flag means that the
+            operation is handling framing, transcript comments or some other sort
+            of protocol metadata.  It doesn't affect how the operation is performed.
+            This is intended to be used as described below
+            in <a href="#ops.comp">Section 6.3</a>.
+        </li>
+        <li><code>K = 1&lt;&lt;5</code>, "keytree".  This flag is reserved for a certain
+            protocol-level countermeasure against side-channel analysis.  It does affect
+            how an operation is performed.  This specification does not describe its use.
+            For all operations in this specification, the <code>K</code> flag must be clear.
+        </li>
+        <li>The flags <code>1&lt;&lt;6</code> and <code>1&lt;&lt;7</code> are reserved for
+            future versions.</li>
+    </ul>
+    
+    <h4 id="#ops.flags.table">Flags for the defined operations</h4>
+    <p>Each operation type is uniquely described by a combination of the above flags:</p>
+    <table>
+        <thead><tr><th>Operation</th><th colspan="4">Flags</th></tr></thead>
+        <tbody>
+        <tr><td><code>AD</code></td>
+            <td></td><td><code>A</code></td><td></td><td></td>
+        </tr>
+        <tr><td><code>KEY</code></td>
+            <td></td><td><code>A</code></td><td><code>C</code></td><td></td>
+        </tr>
+        <tr><td><code>PRF</code></td>
+            <td><code>I</code></td><td><code>A</code></td><td><code>C</code></td><td></td>
+        </tr>
+        <tr><td><code>send_CLR</code></td>
+            <td></td><td><code>A</code></td><td></td><td><code>T</code></td>
+        </tr>
+        <tr><td><code>recv_CLR</code></td>
+            <td><code>I</code></td><td><code>A</code></td><td></td><td><code>T</code></td>
+        </tr>
+        <tr><td><code>send_ENC</code></td>
+            <td></td><td><code>A</code></td><td><code>C</code></td><td><code>T</code></td>
+        </tr>
+        <tr><td><code>recv_ENC</code></td>
+            <td><code>I</code></td><td><code>A</code></td><td><code>C</code></td><td><code>T</code></td>
+        </tr>
+        <tr><td><code>send_MAC</code></td>
+            <td></td><td></td><td><code>C</code></td><td><code>T</code></td>
+        </tr>
+        <tr><td><code>recv_MAC</code></td>
+            <td><code>I</code></td><td></td><td><code>C</code></td><td><code>T</code></td>
+        </tr>
+        <tr><td><code>RATCHET</code></td>
+            <td></td><td></td><td><code>C</code></td><td></td>
+        </tr>
+    </tbody>
+    </table>
+    <p> The <code>meta</code> variants of the operations are the same as the
+        non-<code>meta</code> variants, but they additionally have the <code>M</code> flag set.
+    </p>
+    <p>
+        The other 6 combinations of the <code>IACT</code> flags are legal and their behavior
+        is well-defined, but they aren't as useful.
+    </p>
+    
+    <h3 id="ops.comp">Composite operations</h3>
+
+    <p class="comment">
+        Composite operations enable protocols to comply with the
+        <a href="https://en.wikipedia.org/wiki/Horton_Principle">Horton principle</a>:
+        "authenticate what is being meant, not what is being said".  They do this by
+        adding metadata to the operation which describes its meaning.  How
+        to encode that meaning is up to the protocol, so the metadata may be in any
+        number of <code>meta</code> operations of any lengths.  The most straightforward
+        encoding would be a single-byte <em>tag</em> describing the meaning of the
+        data, and a fixed number of bytes describing the length of the data in some
+        particular endianness.
+        <br/><br/>
+        The metadata is processed before the data.  This means that <code>PRF</code> outputs,
+        encrypted data and <code>MAC</code>s will depend on the metadata as
+        well as on previous operations.
+        <br/><br/>
+        In a complex protocol, it might be possible to send more than
+        one kind of message at a given point.  It is safe for the recipient to read the
+        framing data &mdash; either all at once or byte-by-byte &mdash; to determine
+        which kind of message to receive.  However, the recipient must only accept a
+        message if it is appropriate at the current stage of the protocol.
+    </p>
+    <p>
+        A <em>composite operation</em> is a sequence of two or more operations,
+        exactly one of which is designated as the <em>payload</em>.  The sequence consists of:
+    </p>
+    <ul>
+        <li>One or more <code>meta_AD</code>, <code>meta_CLR</code> or <code>meta_ENC</code>
+            operations containing information about what the payload operation means to
+            the protocol.  For protocols which use framing data on the transport, this
+            is generally a single <code>meta_CLR</code> containing that framing data.
+            <span class="comment">
+            If the payload operation uses the cipher's output, then these <code>meta</code>
+            operation(s) should uniquely encode the length of the payload as well as its
+            meaning.  This prevents mistakes that could lead to truncation attacks.
+            </span>
+        </li>
+        <li>Optionally, a <code>meta_MAC</code> operation to protect the framing data.
+            <span class="comment">
+                Most protocols will omit this to save bandwidth.  It may be a useful operation
+                if the recipient of the message will have to do something expensive depending
+                on the metadata, such as allocating large amounts of memory.  Remember that
+                a <code>meta_MAC</code> doesn't help if the sender is malicious.
+            </span>
+        </li>
+        <li>
+            The payload operation itself, which must not be a <code>meta</code> operation.
+        </li>
+    </ul>
+    
+    <div class="warning">
+        Once a key has been provided, it is recommended for at least the last operation of
+        every flow to be a <code>MAC</code> operation.  In some circumstances, it is
+        also important to provide a <code>MAC</code> before the end of the flow.  Consult
+        a cryptographer if you are unsure.
+        <br/><br/>
+        It is usually preferable to use fixed-length MACs, instead of putting their
+        lengths in framing data.  There are three principal exceptions:
+        <ul>
+            <li>If another party needs to parse the protocol transcript without
+                fully understanding it, then it may help to send the length in
+                framing data.  However, that length should be fixed.</li>
+            <li>To prevent mistakes that could lead to <code>MAC</code> truncation or
+                extension attacks, it makes
+                sense to supply the <code>MAC</code> length in a <code>meta_AD</code>
+                transaction.  It should still be fixed.</li>
+            <li>If framing data is encrypted, then the MAC may be variable-length to
+                disguise the length of the rest of the data in the packet.  It must
+                still be at least 8 bytes, preferably at least 16 bytes.</li>
+            </li>
+        </ul>
+        <br/>
+        In any case, protocols must not accept <code>MAC</code>s below a fixed minimum
+        length, which should not be less than 8 bytes.
+    </div>
+    
+    <p class="comment">
+        A composite operation consists of one or more <code>meta</code> operations,
+        followed by exactly one non-<code>meta</code> operation.  It is recommended
+        not to use <code>meta</code> operations except to implement these composite
+        operations.  That way, the protocol transcript can be parsed uniquely
+        into a sequence of (composite and possibly non-composite) operations.
+    </p>
+        
+    <p class="comment">
+    In a complex protocol, it might be possible to send more than
+    one kind of message at a given point.  It is safe for the recipient to read the
+    framing data &mdash; either all at once or byte-by-byte &mdash; to determine
+    which kind of message to receive.  However, the recipient must only accept a
+    message if it is appropriate at the current stage of the protocol.
+    </p>
+    
+    <h2 id="ops.impl">Implementation of operations</h2>
+    
+    <p>This section describes formally what each operation does and how it is
+        implemented.  The implementation is described by Python code.
+        <b>[TODO: and math?]</b>
+    </p>
+    
+    <h3 id="ops.impl.runf">Duplexing and running <var>F</var></h3>
+    <p><span class="strobe">Strobe</span> is a
+        <a href="https://sponge.noekeon.org/SpongeDuplex.pdf">duplex construction</a>,
+        so its core routine <code>_duplex()</code> is somewhat unsurprising.  This
+        routine takes input data and three binary arguments:
+        <var>cbefore</var>, <var>cafter</var> and <var>forceF</var>.
+    </p>
+    <p>If <var>cafter</var> is set, then
+        the data is modified by the duplex construction after absorbing it.  This is
+        used for encryption.  If <var>cbefore</var> is set, the data is modified by
+        the duplex construction before absorbing it.  This is used for decryption.
+        There is no case where both <var>cbefore</var> and <var>cafter</var> are set.
+    </p>
+    <p>
+        Certain operations need to run <var>F</var> afterward, in order to begin a new block.
+        For brevity, they do this by passing a <var>forceF</var> argument to <code>_duplex()</code>.
+    </p>
+    <pre>
+def _duplex(<var class="self">self</var>, <var>data</var>, <var>cbefore</var>=False, <var>cafter</var>=False, <var>forceF</var>=False):
+<span class="codecomment">
+    <span class="codecomment"># This is an internal function.  It's not part of STROBE's API.</span>
+    assert not (<var>cbefore</var> and <var>cafter</var>)
+    
+    <span class="codecomment"># Copy <var>data</var>, and convert string or int to bytearray</span>
+    <span class="codecomment"># This converts an integer <var>n</var> to an array of <var>n</var> zeros</span>
+    <var>data</var> = bytearray(<var>data</var>)
+
+    for <var>i</var> in range(len(<var>data</var>)):
+        if <var>cbefore</var>: <var>data</var>[<var>i</var>] ^= <var class="self">self.</var><var>st</var>[<var class="self">self.</var><var>pos</var>]
+        <var class="self">self.</var><var>st</var>[<var class="self">self.</var><var>pos</var>]   ^= <var>data</var>[<var>i</var>]
+        if <var>cafter</var>:  <var>data</var>[<var>i</var>]  = <var class="self">self.</var><var>st</var>[<var class="self">self.</var><var>pos</var>]
+        
+        <var class="self">self.</var><var>pos</var> += 1
+        if <var class="self">self.</var><var>pos</var> == <var class="self">self.</var><var>R</var>: <var class="self">self.</var>_runF()
+    
+    if <var>forceF</var> and <var class="self">self.</var><var>pos</var> != 0: <var class="self">self.</var>_runF()
+    return <var>data</var>
+</pre>
+        
+        
+    <p>When the rate is exceeded, or when beginning an operation
+        that uses the cipher state, <span class="sc">Strobe</span> runs the
+        sponge function <var>F</var> on the state.  This begins a new block.
+        Because <var>pos<sub>begin</sub></var> records the beginning of an
+        operation <em>within the block</em>, <span class="sc">Strobe</span>
+        absorbs it and resets it when beginning a new block:
+    </p>
+    <pre>
+def _runF(<var class="self">self</var>):
+    <span class="codecomment"># This is an internal function.  It's not part of STROBE's API.</span>
+    if <var class="self">self.</var><var>initialized</var>:
+        <var class="self">self.</var><var>st</var>[<var class="self">self.</var><var>pos</var>]   ^= <var class="self">self.</var><var>pos<sub>begin</sub></var>
+        <var class="self">self.</var><var>st</var>[<var class="self">self.</var><var>pos</var>+1] ^= 0x04
+        <var class="self">self.</var><var>st</var>[<var class="self">self.</var><var>R</var>+1]   ^= 0x80
+    <var class="self">self.</var><var>st</var>  = <var class="self">self.</var><var>F</var>(<var class="self">self.</var><var>st</var>)
+    <var class="self">self.</var><var>pos</var> = <var class="self">self.</var><var>pos<sub>begin</sub></var> = 0</pre>
+    <p class="comment">
+        The <code>0x04</code> and <code>0x80</code> pads are cSHAKE's output padding mode.  For simplicity,
+        this is applied on every block whether it has output or not.
+        <code>[<var>pos<sub>begin</sub></var>]</code> is <span class="sc">Strobe</span>'s padding mode on top
+        of cSHAKE's padding.
+        <br/><br/>
+        <span class="sc">Strobe</span> uses cSHAKE's domain separation to ensure that it is
+        distinct from all other uses of <span class="sc">Keccak</span>.  It then uses its
+        own internal separation &mdash; a <code>meta_AD</code> operation &mdash; to
+        ensure that every <span class="sc">Strobe</span>-based protocol is distinct.  This
+        first separation uses cSHAKE's specified padding mode instead of
+        <span class="sc">Strobe</span>'s padding.  This is
+        why <code>_runF</code> checks <var class="self">self.</var><var>initialized</var>.
+    </p>
+    
+    <h3 id="ops.impl.init">Initialization</h3>
+    <p>
+        <span class="sc">Strobe</span>'s initial state is set using cSHAKE's domain separation.
+        The cSHAKE domain separation string is <var>S</var> = "STROBEv1.0.2".
+        The NIST separation string is <var>N</var> = "", because <span class="sc">Strobe</span> wasn't designed by NIST.
+    </p>
+        <pre>
+def __init__(<var class="self">self, </var><var>proto</var>, <var>F</var> = KeccakF(1600), <var>sec</var> = 128):
+    <var class="self">self.</var><var>pos</var> = <var class="self">self.</var><var>pos<sub>begin</sub></var> = 0
+    <var class="self">self.</var><var>I<sub>0</sub></var> = None
+    <var class="self">self.</var><var>F</var>  = <var>F</var>
+    <var class="self">self.</var><var>R</var>  = <var>F</var>.<var>nbytes</var> - <var>sec</var>//4
+    <var class="self">self.</var><var>cur_flags</var> = None
+    
+    <span class="codecomment"># Domain separation doesn't use <span class="sc">Strobe</span> padding</span>
+    <var class="self">self.</var><var>initialized</var> = False
+    <var class="self">self.</var><var>st</var> = bytearray(<var>F</var>.<var>nbytes</var>)
+    <var>domain</var> = bytearray([1,<var class="self">self.</var><var>R</var>,1,0,1,12*8]) \
+           + bytearray("STROBEv1.0.2")
+    <var class="self">self.</var>_duplex(<var>domain</var>, forceF=True)
+    
+    <span class="codecomment"># cSHAKE separation is done.</span>
+    <span class="codecomment"># Turn on <span class="sc">Strobe</span> padding and do per-proto separation</span>
+    <var class="self">self.</var><var>R</var> -= 2
+    <var class="self">self.</var><var>initialized</var> = True
+    <var class="self">self.</var>operate(A|M, <var>proto</var>)
+</pre>
+    
+    <h3 id="ops.impl.begin">Beginning an operation</h3>
+    <p>Beginning an operation absorbs the old <var>pos<sub>begin</sub></var> state variable,
+        and then sets it to where this operation began.  It then absorbs the operation,
+        adjusted so that the sender and receiver will compute the same value.
+    </p>
+<pre>
+def _beginOp(<var class="self">self, </var><var>flags</var>):
+    <span class="codecomment"># This is an internal function.  It's not part of STROBE's API.</span>
+    <span class="codecomment"># Adjust direction information so that sender and receiver agree</span>
+    if <var>flags</var> &amp; T:
+        if <var class="self">self.</var><var>I<sub>0</sub></var> is None: <var class="self">self.</var><var>I<sub>0</sub></var> = <var>flags</var> &amp; I
+        <var>flags</var> ^= <var class="self">self.</var><var>I<sub>0</sub></var>
+
+    <span class="codecomment"># Update <var>pos<sub>begin</sub></var></span>
+    <var>old<sub>begin</sub></var>, <var class="self">self.</var><var>pos<sub>begin</sub></var> = <var class="self">self.</var><var>pos<sub>begin</sub></var>, <var class="self">self.</var><var>pos</var>+1
+    
+    <var class="self">self.</var>_duplex([<var>old<sub>begin</sub></var>,<var>flags</var>], forceF = <var>flags</var>&amp;(C|K))</pre>
+    <p class="comment">
+        Forcing <var>F</var> when <code><var>flags</var> &amp; (C|K)</code> is nonzero ensures that
+        any input &mdash; including the operation's <var>flags</var> &mdash;
+        will affect the output of <code>C</code>-flagged operations
+        like <code>ENC</code>,  <code>MAC</code> and <code>PRF</code>.  It also
+        ensures that the rekeying operations
+        <code>KEY</code> and <code>RATCHET</code> begin
+        at the start of a block.  This is important to prevent rollback attacks: if a 
+        <code>KEY</code> or <code>RATCHET</code> were split across blocks, then
+        an adversary who recovered a later state could split the work of
+        brute-forcing the earlier state into separate attacks on each block.
+    </p>
+    
+    <h3 id="ops.impl.byte">Main operation code</h3>
+    <p>To perform an operation, <span class="sc">Strobe</span> first runs the beginning-of-operation
+        code.  It then duplexes the data with <var>cbefore</var> and <var>cafter</var>
+        set according to the operation's flags.  Finally, it decides what to do with the
+        output: return it, ignore it, or check it as a MAC value.
+    </p>
+    <p>The implementation below supports a <var>more</var> flag for streaming purposes.
+        Setting <var>more</var> processes the given <var>data</var> as a continuation
+        of the previous operation, instead of as a new operation.
+    </p>
+<pre>
+def operate(<var class="self">self</var>, <var>flags</var>, <var>data</var>, <var>more</var>=False):
+    assert not (<var>flags</var> &amp; (K|1&lt;&lt;6|1&lt;&lt;7)) <span class="codecomment"># Not implemented here</span>
+    if <var>more</var>:
+        assert <var>flags</var> == <var class="self">self.</var><var>cur_flags</var>
+    else:
+        <var class="self">self</var>._beginOp(<var>flags</var>)
+        <var class="self">self.</var><var>cur_flags</var> = <var>flags</var>
+    
+    if (<var>flags</var> &amp; (I|T) != (I|T)) and (<var>flags</var> &amp; (I|A) != A):
+        <span class="codecomment"># Operation takes no input, only a length</span>
+        assert isinstance(<var>data</var>,int)
+        <span class="codecomment"># This is because in Python, bytearray(<var>n</var>) returns an array</span>
+        <span class="codecomment"># of <var>n</var> zeros.</span>
+        <span class="codecomment">#</span>
+        <span class="codecomment"># In other languages, you might make a function which</span>
+        <span class="codecomment"># takes a length and a nullable pointer, or which is</span>
+        <span class="codecomment"># overloaded to take either an integer or a byte array.</span>
+
+    <span class="codecomment"># The actual processing code is just duplex</span>
+    <var>cafter</var>    = (<var>flags</var> &amp; (C|I|T)) == (C|T)
+    <var>cbefore</var>   = (<var>flags</var> &amp; C) and not <var>cafter</var>
+    <var>processed</var> = <var class="self">self</var>._duplex(<var>data</var>, <var>cbefore</var>, <var>cafter</var>)
+    
+    <span class="codecomment"># Determine what to do with the output.</span>
+    if (<var>flags</var> &amp; (I|A)) == (I|A):
+        <span class="codecomment"># Return data for the application</span>
+        return processed 
+        
+    elif (<var>flags</var> &amp; (I|T)) == T:
+        <span class="codecomment"># Return data for the transport.</span>
+        <span class="codecomment"># A fancier implementation might send it directly.</span>
+        return processed 
+        
+    elif (<var>flags</var> &amp; (I|A|T)) == (I|T):
+        <span class="codecomment"># Check MAC: all output bytes must be 0</span>
+        assert not <var>more</var> <span class="codecomment"># See the <a href="#warn.sidechannel">side-channel warning</a></span>
+        <var>failures</var> = 0
+        for <var>byte</var> in <var>processed</var>: <var>failures</var> |= <var>byte</var>
+        if <var>failures</var> != 0: raise AuthenticationFailed()
+        return bytearray()
+
+    else:
+        <span class="codecomment"># Operation has no output</span>
+        return bytearray()
+</pre>
+    <p>Each of the defined operations from Section 6 is implemented as a call to <code>operate</code>.
+        Note that some operations take an array of <var>data</var> whereas some just take a <var>length</var>.
+        That these two types are handled the same way is an idiom of Python.  Other languages would take
+        <var>length</var> as an integer and <var>data</var> as an array of bytes.
+    </p>
+<pre>def AD(<var class="self">self</var>, <var>data</var>, <var>more</var>=False):
+    <var>self</var>.operate(A, <var>data</var>, <var>more</var>)
+    
+def KEY(<var class="self">self</var>, <var>data</var>, <var>more</var>=False):
+    <var>self</var>.operate(A|C, <var>data</var>, <var>more</var>)
+    
+def send_CLR(<var class="self">self</var>, <var>data</var>, <var>more</var>=False):
+    return <var>self</var>.operate(A|T, <var>data</var>, <var>more</var>)
+    
+def recv_CLR(<var class="self">self</var>, <var>data</var>, <var>more</var>=False):
+    return <var>self</var>.operate(I|A|T, <var>data</var>, <var>more</var>)
+    
+def send_ENC(<var class="self">self</var>, <var>data</var>, <var>more</var>=False):
+    return <var>self</var>.operate(A|C|T, <var>data</var>, <var>more</var>)
+    
+def recv_ENC(<var class="self">self</var>, <var>data</var>, <var>more</var>=False):
+    return <var>self</var>.operate(I|A|C|T, <var>data</var>, <var>more</var>)
+    
+def send_MAC(<var class="self">self</var>, <var>length</var>, <var>more</var>=False):
+    return <var>self</var>.operate(C|T, <var>length</var>, <var>more</var>)
+    
+def recv_MAC(<var class="self">self</var>, <var>data</var>, <var>more</var>=False):
+    <var>self</var>.operate(I|C|T, <var>data</var>, <var>more</var>)
+    
+def PRF(<var class="self">self</var>, <var>length</var>, <var>more</var>=False):
+    return <var>self</var>.operate(I|A|C, <var>length</var>, <var>more</var>)
+    
+def RATCHET(<var class="self">self</var>, <var>length</var>, <var>more</var>=False):
+    <var>self</var>.operate(C, <var>length</var>, <var>more</var>)    
+</pre>
+</body>

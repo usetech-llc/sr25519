@@ -1,0 +1,103 @@
+<html>
+<head>
+    <title>Strobe protocol framework</title>
+    <link rel="stylesheet" type="text/css" href="/style.css"/>
+</head>
+<body>
+    <h1><a href="/"><span class="sc">Strobe</span> protocol framework</a></h1>
+    <div id="nav">
+        <a href="/">overview</a>
+        <a href="/specs/">specification</a>
+        <a class="here" href="/examples/">example protocols</a>
+        <a href="/code/">code</a>
+        <a href="/papers/">papers</a>
+    </div>
+
+    <h2>Protocol examples: AEAD</h2>
+    
+    <h2>Table of Contents</h2>
+    <div class="toc">
+        <h2><a href="#version">Version</a></h2>
+        <h2><a href="#goals">Goals</a></h2>
+        <h2><a href="#sep">Domain separation string</a></h2>
+        <h2><a href="#seq">Sequence of operations</a></h2>
+        <h2><a href="#sec">Security requirements</a></h2>
+        <h3><a href="#sec.capacity">Capacity</a></h3>
+        <h3><a href="#sec.entropy">Key entropy</a></h3>
+        <h3><a href="#sec.unique">Uniqueness</a></h3>
+        <h2><a href="#claim">Security claim</a></h2>
+        <h2><a href="#comp">Composition</a></h2>
+    </div>
+    
+    <h2 id="version">Version</h2>
+    <p>This is version 1 of the AEAD example protocol.</p>
+    
+    <h2 id="goals">Goals</h2>
+    <p>This protocol transmits any number of authenticated plaintext data and any number of encrypted messages.
+        It authenticates them with any positive number of keys, which in most use cases will be one.
+    </p>
+    <p>
+        Several of the operations may be either untransmitted, transmitted without framing information, or
+        transmitted with framing information.  These are written as <code>meta-AD/CLR</code> and <code>AD/CLR</code>
+        operations.  The protocol is secure with any combination of transmitted and untransmitted information
+        in any order.  If the recipient uses a different combination of transmitting and not transmitting, then
+        the message will fail to decrypt correctly (that is, the MAC check will fail with high probability).
+    </p>
+    
+    <h2 id="sep">Domain separation string</h2>
+    <p>The domain separation string for this protocol is <code>"<a href="https://strobe.sourceforge.io/examples/aead">https://strobe.sourceforge.io/examples/aead</a>"</code>.</p>
+    
+    <h2 id="seq">Sequence of operations</h2>
+    <p>The protocol consists of the following operations:</p>
+    <ul><li>One or more <code>KEY</code> operations, with the <code>SYM_KEY = 0x01</code> tag: <pre>(meta-AD(0x01); KEY(key))+</pre></li>
+    <li>Zero or more <code>VERSION</code> operations, with the <code>VERSION = 0x21</code> tag and exactly 2 length bytes.  This protocol specification is version 0x01:
+        <pre>(meta-AD/CLR(0x21 0x01 0x00); AD/CLR(0x01))+</pre>
+    </li>
+    <li>Zero or more <code>NONCE</code> operations, with the <code>NONCE = 0x04</code> tag and any number of length bytes.
+        Also, zero or more <code>AUTH_DATA</code> operations, with the <code>AUTH_DATA = 0x05</code> tag and any number of length bytes.  The <code>AUTH_DATA</code> operations may be mixed in arbitrary order with the nonce(s): <pre>( meta-AD/CLR(0x05 .. length); AD/CLR(ad)
+| meta-AD/CLR(0x04 .. length); AD/CLR(nonce)
+)*</pre>
+        If the metadata for an AD or nonce is transmitted, then the AD or nonce must also be transmitted.</li>
+    <li>Zero or more <code>APP_CIPHERTEXT</code> operations, with the <code>APP_CIPHERTEXT = 0x03</code> tag and any number of length bytes: <pre>(meta-AD/CLR(0x03 .. length); ENC(data))*</pre></li>
+    <li>Exactly one <code>MAC</code> operation, with the <code>MAC = 0x06</code> tag and exactly 2 length bytes:
+        <pre>meta-AD/CLR(0x06, length low, length high); MAC()</pre>
+        The MAC must be at least 8 bytes (64 bits) long, but 128 bytes is recommended.
+    </li>
+    </ul>
+    
+    <h2 id="sec">Security requirements</h2>
+    <h3 id="sec.capacity">Capacity</h3>
+    <p>The capacity of the sponge must be at least 2<var>&lambda;</var> bits, where <var>&lambda;</var> is the desired security level.  For 128-bit security, the capacity must be 32 bytes (256 bits) or more.
+    </p>
+    <h3 id="sec.entropy">Key entropy</h3>
+    <p>The keys must be drawn from a set which is hard to guess.  We recommend one key which is uniformly random and 32 bytes (256 bits) long, but 16 bytes (128 bits) is acceptable for most use cases.  The keys must be kept secret from the adversary.  If the adversary can guess the keys, then all security will be lost.</p>
+    <h3 id="sec.unique">Uniqueness</h3>
+    <p>The (keys,version,nonces,auth_datas) tuple must be unique.  Otherwise, an adversary can learn the encrypted messages, but still can't forge MACs.  <b>This construction is not nonce-misuse resistant.</b></p>
+    
+    <h2 id="claim">Security claim</h2>
+    <p>If the security requirements are observed, then the system is IND-CCA2 secure.  This means that an adversary cannot distinguish between encrypted messages that have the same length.  The adversary can learn the length of the message.  If a tuple of messages is sent, then the adversary can learn the length of the messages if and only if the length framing is sent.  Furthermore, the adversary cannot forge MACs, except by random chance (i.e. with probability 256<sup>-MAC length</sup>).
+    </p>
+    <p>The adversary can gain an advantage by collecting data (possibly across multiple encrypted messages) and by doing computation.  The advantage is <var>&epsilon;</var> &lt; (<var>N</var>/2<sup><var>&lambda;</var></sup>)<sup>2</sup>, where <var>N</var> is the number of times the adversary calls <var>F</var>, plus the number of times someone else calls <var>F</var> and the adversary collects the results.
+    </p>
+    <p>The adversary can also break all security by guessing the keys, which will happen after <var>N</var> work with probability <var>N</var><var>D</var>/2<sup><var>K</var></sup>, where <var>D</var> is the number of encrypted messages with different keys but the same (nonces,ADs) that the adversary can collect, and <var>K</var> is the min-entorpy of the key space.
+    </p>
+    
+    <h2 id="comp">Composition</h2>
+    <p>This protocol may be composed before or after any number of other protocols, using an operation
+        <pre>meta-AD/CLR(0x00 .. length); AD/CLR(<var>sep</var>)</pre>, where <var>sep</var>
+        is the domain separation string <code>"https://strobe.sourceforge.io/examples/aead"</code>.
+        Larger protocols may instead assign other (e.g., shorter) separation strings, or omit them
+        if the use of this protocol is clear from context.
+        When running a second instance of this protocol following the first, this operation may be omitted.
+    </p>
+    <p>If a previous protocol has set one or more keys, then the <code>KEY</code> component of this may be omitted.
+        It will then rely on the security of the previously-set keys.
+    </p>
+    <p>
+        If in a previous protocol, this party has sent messages (or absorbed AD) which it knows is unique, then
+        this satisfies the (keys,version,nonces,auth_datas) uniqueness requirement.  Messages sent by the other party
+        also satisfy this.  But because it is often hard to tell if the other party's messages have been replayed,
+        applications SHOULD NOT rely on this.
+    </p>
+    
+</body>

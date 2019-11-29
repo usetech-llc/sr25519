@@ -1,0 +1,260 @@
+span.sc {
+    font-variant: small-caps;
+}
+
+
+html {
+  background: #bcf;
+  font: 1em "Helvetica Neue",Helvetica,sans-serif;
+  line-height: 1.6;
+  overflow-y: scroll;
+  overflow-x: auto;
+  height: 100%;
+}
+
+h1 {
+  font-size: 2.6em;
+  font-weight: normal;
+  padding: 6px;
+  margin: 0px -70px 0px -70px;
+  text-align: center;
+}
+
+table {
+    max-width: 400px;
+    margin: 0px auto;
+    background: #f8f8ff;
+    border: 1px solid #555;
+}
+th {
+    padding: 0.1em 0.5em;
+    background: #bcf;
+}
+tr.rule {
+    height: 10px;
+    padding: 0px;
+    display: block;
+    background: black;
+}
+td {
+    padding: 0em 0.1em;
+}
+
+
+h2 {
+    margin-top: 0.8em;
+  font-size: 1.8em;
+  font-weight: normal;
+}
+
+h3,h4 {
+  margin-top: 0.8em;
+  font-size: 1.8em;
+  font-weight: normal;
+}
+
+div#nav {
+    margin: 5px -70px 20px -70px;
+    padding: 0.5em;
+    background: #dde5ff;
+    text-align: center;
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+
+pre {
+    font: 1em "Courier",mono;
+    margin: 0px;
+    display: block;
+    padding: 0.5em;
+    background: #fffff8;
+    border: 1px solid black;
+}
+
+span.inst {
+    display: block;
+    color: #080;
+    border: 1px solid #080;
+    padding: 0.2em 2em;
+    background: #dfd;
+}
+
+/*
+@font-face {
+  font-family: "Computer Modern";
+  src: url('https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunss.otf');
+}
+@font-face {
+  font-family: "Computer Modern";
+  src: url('https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunsx.otf');
+  font-weight: bold;
+}
+@font-face {
+  font-family: "Computer Modern";
+  src: url('https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunsi.otf');
+  font-style: italic, oblique;
+}
+@font-face {
+  font-family: "Computer Modern";
+  src: url('https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunbxo.otf');
+  font-weight: bold;
+  font-style: italic, oblique;
+}
+*/
+
+.self {
+/*    display: inline-block;
+    overflow: hidden;
+    max-width: 1px;
+    height: 0.8em;
+    margin-right: -1px;*/
+    color: #800;
+    font-style: normal;
+}
+
+.toc :after {
+    counter-reset: h2 h3 h4;
+}
+.toc h2, .toc h3, .toc h4 {
+    font-size: 1em;
+    margin: 0px;
+}
+.toc h2 { padding-left: 0em; }
+.toc h3 { padding-left: 2em; }
+.toc h4 { padding-left: 4em; }
+.toc a { color: black; }
+
+.toc ~ h2, .toc > h2 {
+    counter-increment: h2;
+    counter-reset: h3 h4;
+}
+h3 {
+    counter-increment: h3;
+    counter-reset: h4;
+}
+h4 {
+    counter-increment: h4;
+}
+.toc ~ h2:before, .toc > h2:before {
+    content: counter(h2) ". ";
+}
+h3:before {
+    content: counter(h2) "." counter(h3) ". ";
+}
+h4:before {
+    content: counter(h2) "." counter(h3) "." counter(h4) ". ";
+}
+
+
+var {
+    /*font: 1.1em "Computer Modern";
+    font-style: italic;
+    color: #a00;
+    */
+    font: 1.0em "Courier",mono;
+    font-style: italic;
+    color: #00a;
+}
+
+.codecomment {
+    color: #888;
+}
+
+.comment:before {
+    display: block;
+    text-align: center;
+    background: #333;
+    color: white;
+    position: absolute;
+    font-size: 0.7em;
+    top: 0em;
+    left: 0em;
+    right: 0em;
+    content: "Note:";
+}
+.warning {
+    display: block;
+    color: #600;
+    border: 1px solid #600;
+    padding: 1.5em 1em 0.3em 1em;
+    margin: 0.2em 0em;
+    position: relative;
+    background: #f8dddd;
+}
+.warning:before {
+    display: block;
+    text-align: center;
+    background: #600;
+    color: white;
+    position: absolute;
+    font-size: 0.7em;
+    top: 0em;
+    left: 0em;
+    right: 0em;
+    content: "Warning!";
+}
+.comment {
+    display: block;
+    color: #333;
+    border: 1px solid #333;
+    padding: 1.5em 1em 0.3em 1em;
+    margin: 0.2em 0em;
+    position: relative;
+    background: #eee;
+}
+.impl {
+    display: block;
+    color: #406;
+    border: 1px solid #406;
+    padding: 0.3em 1em 0.3em 1em;
+    margin: 0.2em 0em;
+    position: relative;
+    background: #dce;
+}
+
+#nav a.here { color: #0a0; }
+#nav a { margin: 0px 1em;}
+h1 a, #nav a { color: black; }
+a, h1 a:hover { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+body {
+  width: 700px;
+  padding: 0px 70px 50px 70px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background: #f9f9ff;
+  min-height: 100%;
+}
+
+span.sha:before {
+    content: "SHA256:";
+    margin-right: 0.1em;
+    font: 0.9em "Courier",mono;
+}
+span.sha {
+    display: block;
+    margin-left: 2em;
+    font: 0.9em "Courier",mono;
+    padding: 0.1em;
+}
+
+code {
+    font: 1em "Courier",mono;
+    display: inline-block;
+    /*
+    border: 1px solid #888;
+    padding: 1px 3px;
+    border-radius: 3px;
+    background: #ddd;
+    */
+}
+
+ul,ol { padding-left: 2em; }
+ul.wide li { margin-bottom: 1em; }
+
+* { margin: 0px; padding: 0px; }
+
+/*p { text-align: justify; }*/
+p+p { margin-top: 1em; }
