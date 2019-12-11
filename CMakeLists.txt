@@ -41,8 +41,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ###############################################################################
 # Polkadot C++ API Library
 
-# Build library code from src folder as shared object
-add_library(sr25519 SHARED  ${strobe} ${src})
+# Build library code from src folder
+add_library(sr25519 ${strobe} ${src})
 
 add_executable(sr25519test ${strobe} ${src} ${srch} ${srctest})
+target_link_libraries (sr25519test sr25519)
 
