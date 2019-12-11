@@ -15,25 +15,25 @@ void append_message(transcript_strobe strobe,
 void meta_ad(transcript_strobe strobe,
 	uint8_t* data,
 	unsigned int length,
-	bool more);
+	_Bool more);
 
 void ad(transcript_strobe strobe,
 	uint8_t* data,
 	unsigned int length,
-	bool more);
+	_Bool more);
 
 uint8_t* prf(transcript_strobe strobe,
 	unsigned int expected_output,
-	bool more);
+	_Bool more);
 
 void key(transcript_strobe strobe,
 	uint8_t* data,
 	size_t len,
-	bool more);
+	_Bool more);
 
 uint8_t* operate(transcript_strobe strobe,
-	bool meta,
-	bool more,
+	_Bool meta,
+	_Bool more,
 	control_word_t flags,
 	uint8_t* data,
 	unsigned int length);

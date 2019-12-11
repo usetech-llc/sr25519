@@ -4,7 +4,7 @@
 #include <time.h>
 
 // montgomery
-int128_t _m(unsigned long long a, unsigned long long b)
+inline int128_t _m(unsigned long long a, unsigned long long b)
 {
 	int128_t res_hi, res_lo, ba, bb;
 	int128_from_uint64(&ba, a);
@@ -13,7 +13,7 @@ int128_t _m(unsigned long long a, unsigned long long b)
 	return res_lo;
 };
 
-int128_t _m2(int128_t* a, unsigned long long b)
+inline int128_t _m2(int128_t* a, unsigned long long b)
 {
 	int128_t res_hi, res_lo, ba, bb;
 	int128_from_uint64(&bb, b);
@@ -70,12 +70,12 @@ void fill_bytes(strobe_s* signing_transctipt, uint8_t* bytes)
 };
 
 // EdwardsBasepointTable
-int8_t botHalf(int8_t x)
+inline int8_t botHalf(int8_t x)
 {
 	return (int8_t)((x >> 0) & 15);
 }
 
-int8_t topHalf(int8_t x)
+inline int8_t topHalf(int8_t x)
 {
 	return (int8_t)((x >> 4) & 15);
 }
@@ -192,7 +192,7 @@ void affine_niels_points_negate(affine_niels_point_s* pt)
 	field_element51_negate(&pt->xy2d);
 };
 
-void lookup_table_select(lookup_table_s* ebp, int8_t x, affine_niels_point_s* result)
+inline void lookup_table_select(lookup_table_s* ebp, int8_t x, affine_niels_point_s* result)
 {
 	// Compute xabs = |x|
 	int xmask = x >> 7;
@@ -1170,7 +1170,7 @@ void witness_scalar(strobe_s* signing_transctipt, uint8_t* bytes, scalar_s* resu
 	uint8_t dest[64];
 	unsigned char* empty_label = "";
 	rekey_with_witness_bytes(&rwb, empty_label, bytes);
-	finalize(&rwb);
+	finalize(&rwb, dest);
 	fill_bytes(&rwb, dest);
 	scalar_s s;
 	scalar_from_bytes_mod_order_wide(dest, &s);
