@@ -1,4 +1,4 @@
-**Note: This is a cut-down version copied from Strobe repository. Documentation and python files were removed. The main repository is located here: https://sourceforge.net/p/strobe/code/ci/master/tree/**
+** Note: This is a cut-down version copied from Strobe repository. Documentation and python files were removed. The main repository is located here: https://sourceforge.net/p/strobe/code/ci/master/tree/ **
 
 STROBE protocol framework
 
