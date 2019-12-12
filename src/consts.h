@@ -6,7 +6,7 @@
 #include "types.h"
 
 // consts
-lookup_table_s** ED25519_basepoint_table_inner()
+lookup_table_s* ED25519_basepoint_table_inner()
 {
 	void* p = malloc(sizeof(lookup_table_s) * 32);
 
@@ -87,7 +87,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 0), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 0), &l, sizeof(lookup_table_s));
 	// 1
 	{
 		field_element51_s ypx = { 1368953770187805, 3042147450398169, 2689308289352409, 2142576377050579, 1932081720066286 };
@@ -162,7 +162,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 1), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 1), &l, sizeof(lookup_table_s));
 	// 2
 	{
 		field_element51_s ypx = { 3180171966714267, 2147692869914563, 1455665844462196, 1986737809425946, 2437006863943337 };
@@ -237,7 +237,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 2), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 2), &l, sizeof(lookup_table_s));
 	// 3
 	{
 		field_element51_s ypx = { 717255318455100, 519313764361315, 2080406977303708, 541981206705521, 774328150311600 };
@@ -312,7 +312,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 3), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 3), &l, sizeof(lookup_table_s));
 	// 4
 	{
 		field_element51_s ypx = { 3859970785658325, 2667608874045675, 1350468408164765, 2038620059057678, 3278704299674360 };
@@ -387,7 +387,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 4), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 4), &l, sizeof(lookup_table_s));
 	// 5
 	{
 		field_element51_s ypx = { 1364039144731711, 1897497433586190, 2203097701135459, 2397261210496499, 1349844460790698 };
@@ -462,7 +462,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 5), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 5), &l, sizeof(lookup_table_s));
 	// 6
 	{
 		field_element51_s ypx = { 3988217766743784, 726531315520507, 1833335034432527, 1629442561574747, 2876218732971333 };
@@ -537,7 +537,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 6), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 6), &l, sizeof(lookup_table_s));
 	// 7
 	{
 		field_element51_s ypx = { 427904865186293, 1703211129693455, 1585368107547509, 3688784302429584, 3012988348299225 };
@@ -612,7 +612,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 7), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 7), &l, sizeof(lookup_table_s));
 	// 8
 	{
 		field_element51_s ypx = { 2926794589205781, 2517835660016036, 826951213393477, 1405007746162285, 1781791018620876 };
@@ -687,7 +687,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 8), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 8), &l, sizeof(lookup_table_s));
 	// 9
 	{
 		field_element51_s ypx = { 1219260086131896, 2898968820282063, 2331400938444953, 2161724213426747, 2656661710745446 };
@@ -762,7 +762,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 9), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 9), &l, sizeof(lookup_table_s));
 	// 10
 	{
 		field_element51_s ypx = { 2439789269177838, 681223515948274, 1933493571072456, 1872921007304880, 2739962177820919 };
@@ -837,7 +837,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 10), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 10), &l, sizeof(lookup_table_s));
 	// 11
 	{
 		field_element51_s ypx = { 3008217384184691, 2489682092917849, 2136263418594015, 1701968045454886, 2955512998822720 };
@@ -912,7 +912,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 11), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 11), &l, sizeof(lookup_table_s));
 	// 12
 	{
 		field_element51_s ypx = { 2361321796251793, 3967057562270386, 1112231216891515, 2046641005101484, 2386048970842261 };
@@ -987,7 +987,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 12), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 12), &l, sizeof(lookup_table_s));
 	// 13
 	{
 		field_element51_s ypx = { 2608268623334125, 3034173730618399, 1718002439402869, 3644022065904502, 663171266061950 };
@@ -1062,7 +1062,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 13), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 13), &l, sizeof(lookup_table_s));
 	// 14
 	{
 		field_element51_s ypx = { 2201150872731785, 2180241023425241, 2349463270108411, 1633405770247823, 3100744856129234 };
@@ -1137,7 +1137,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 14), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 14), &l, sizeof(lookup_table_s));
 	// 15
 	{
 		field_element51_s ypx = { 2102881477513865, 3822074379630609, 1573617900503707, 2270462449417831, 2232324307922097 };
@@ -1212,7 +1212,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 15), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 15), &l, sizeof(lookup_table_s));
 	// 16
 	{
 		field_element51_s ypx = { 849646212451983, 1410198775302919, 2325567699868943, 1641663456615811, 3014056086137659 };
@@ -1287,7 +1287,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 16), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 16), &l, sizeof(lookup_table_s));
 	// 17
 	{
 		field_element51_s ypx = { 2605560604520539, 1598361541848742, 3374705511887547, 4174333403844152, 2670907514351827 };
@@ -1362,7 +1362,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 17), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 17), &l, sizeof(lookup_table_s));
 	// 18
 	{
 		field_element51_s ypx = { 2529951391976704, 1810282338562946, 1771599529530998, 3635459223356879, 2937173228157088 };
@@ -1437,7 +1437,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 18), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 18), &l, sizeof(lookup_table_s));
 	// 19
 	{
 		field_element51_s ypx = { 155711679280637, 681100400509288, 389811735211209, 2135723811340709, 2660533024889373 };
@@ -1512,7 +1512,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 19), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 19), &l, sizeof(lookup_table_s));
 	// 20
 	{
 		field_element51_s ypx = { 1899935429242705, 1602068751520477, 940583196550370, 2334230882739107, 1540863155745695 };
@@ -1587,7 +1587,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 20), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 20), &l, sizeof(lookup_table_s));
 	// 21
 	{
 		field_element51_s ypx = { 1248731221520740, 1465200936117687, 2792603306395388, 2304778448366139, 2513234303861356 };
@@ -1662,7 +1662,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 21), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 21), &l, sizeof(lookup_table_s));
 	// 22
 	{
 		field_element51_s ypx = { 3618358370049178, 1448606567552085, 3730680834630016, 2417602993041145, 1115718458123497 };
@@ -1737,7 +1737,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 22), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 22), &l, sizeof(lookup_table_s));
 	// 23
 	{
 		field_element51_s ypx = { 2705718263383616, 2358206633614248, 2072540975937134, 308588860670238, 1304394580755385 };
@@ -1812,7 +1812,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 23), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 23), &l, sizeof(lookup_table_s));
 	// 24
 	{
 		field_element51_s ypx = { 1632352921721536, 1833328609514701, 2092779091951987, 4175756015558474, 2210068022482918 };
@@ -1887,7 +1887,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 24), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 24), &l, sizeof(lookup_table_s));
 	// 25
 	{
 		field_element51_s ypx = { 1957943897155478, 1788667368028035, 2389492723714354, 2252839333292309, 3078204576998275 };
@@ -1962,7 +1962,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 25), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 25), &l, sizeof(lookup_table_s));
 	// 26
 	{
 		field_element51_s ypx = { 2911103727614740, 1956447718227572, 1830568515922666, 3092868863429656, 1669607124206367 };
@@ -2037,7 +2037,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 26), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 26), &l, sizeof(lookup_table_s));
 	// 27
 	{
 		field_element51_s ypx = { 1835401379538542, 173900035308392, 818247630716732, 4013900225838034, 1021506399448290 };
@@ -2112,7 +2112,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 27), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 27), &l, sizeof(lookup_table_s));
 	// 28
 	{
 		field_element51_s ypx = { 1689713572022124, 2845654372939621, 3229894858477217, 1985127338729498, 3927868934032873 };
@@ -2187,7 +2187,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 28), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 28), &l, sizeof(lookup_table_s));
 	// 29
 	{
 		field_element51_s ypx = { 2723435829455580, 2924255216478824, 1804995246884102, 1842309243470804, 3753662318666930 };
@@ -2262,7 +2262,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 29), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 29), &l, sizeof(lookup_table_s));
 	// 30
 	{
 		field_element51_s ypx = { 2237039662793603, 2249022333361206, 2058613546633703, 2401253908530527, 2215176649164581 };
@@ -2337,7 +2337,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 30), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 30), &l, sizeof(lookup_table_s));
 	// 31
 	{
 		field_element51_s ypx = { 2299141301692989, 1891414891220256, 983894663308928, 2427961581972066, 3378060928864955 };
@@ -2412,7 +2412,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy((unsigned int)p + (sizeof(lookup_table_s) * 31), &l, sizeof(lookup_table_s));
+	memcpy(p + (sizeof(lookup_table_s) * 31), &l, sizeof(lookup_table_s));
 
 
 	//{
@@ -2561,7 +2561,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 	//	s.xy2d = xy2d;
 	//	memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	//}
-	//memcpy((unsigned int)p + sizeof(lookup_table_s), &l, sizeof(lookup_table_s));
+	//memcpy(p + sizeof(lookup_table_s), &l, sizeof(lookup_table_s));
 	//
 	//{
 	//	field_element51_s ypx = { 3180171966714267, 2147692869914563, 1455665844462196, 1986737809425946, 2437006863943337 };
@@ -2635,7 +2635,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 	//	s.xy2d = xy2d;
 	//	memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	//}
-	//memcpy((unsigned int)p + (sizeof(lookup_table_s) * 2), &l, sizeof(lookup_table_s));
+	//memcpy(p + (sizeof(lookup_table_s) * 2), &l, sizeof(lookup_table_s));
 
 	//{
 	//	field_element51_s ypx = { 717255318455100, 519313764361315, 2080406977303708, 541981206705521, 774328150311600 };
@@ -2709,7 +2709,7 @@ lookup_table_s** ED25519_basepoint_table_inner()
 	//	s.xy2d = xy2d;
 	//	memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	//}
-	//memcpy((unsigned int)p + (sizeof(lookup_table_s) * 3), &l, sizeof(lookup_table_s));
+	//memcpy(p + (sizeof(lookup_table_s) * 3), &l, sizeof(lookup_table_s));
 
 	return p;
 };

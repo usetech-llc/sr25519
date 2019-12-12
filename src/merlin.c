@@ -4,14 +4,14 @@ transcript_strobe init_transcript(strobe_t* strobe, unsigned char* label)
 {
 	const char *protocol_label = "Merlin v1.0";
 	const char *protocol_sep = "dom-sep";
-	strobe_init(strobe, protocol_label, strlen(protocol_label));
-	append_message(strobe, protocol_sep, strlen(protocol_sep), label, strlen(label));
+	strobe_init((strobe_s *)strobe, protocol_label, strlen(protocol_label));
+	append_message((strobe_s *)strobe, (char *)protocol_sep, strlen(protocol_sep), label, strlen(label));
 }
 
 void append_message(transcript_strobe strobe, uint8_t* label, unsigned int label_length, uint8_t* message, unsigned int message_length)
 {
 	meta_ad(strobe, label, label_length, 0);
-	meta_ad(strobe, &message_length, sizeof(message_length), 1);
+	meta_ad(strobe, (uint8_t *)&message_length, sizeof(message_length), 1);
 	ad(strobe, message, message_length, 0);
 }
 
@@ -50,6 +50,6 @@ uint8_t* operate(transcript_strobe strobe, _Bool meta, _Bool more, control_word_
 		flags |= FLAG_MORE;
 	}
 
-	return strobe_duplex(strobe, flags, data, length);
+	return (uint8_t *)strobe_duplex(strobe, flags, data, length);
 	//return strobe_operate(strobe, flags, data, length);
 }

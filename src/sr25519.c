@@ -183,7 +183,7 @@ void field_element51_negate(field_element51_s* fe)
 	s.data[2] = ((unsigned long long)36028797018963952) - fe->data[2];
 	s.data[3] = ((unsigned long long)36028797018963952) - fe->data[3];
 	s.data[4] = ((unsigned long long)36028797018963952) - fe->data[4];
-	field_element51_reduce(&s.data, fe);
+	field_element51_reduce((unsigned long long *)&s.data, fe);
 };
 
 void affine_niels_points_negate(affine_niels_point_s* pt)
@@ -236,7 +236,7 @@ void field_element51_sub(field_element51_s* a, field_element51_s* b, field_eleme
 	s.data[2] = a->data[2] + ((unsigned long long)36028797018963952) - b->data[2];
 	s.data[3] = a->data[3] + ((unsigned long long)36028797018963952) - b->data[3];
 	s.data[4] = a->data[4] + ((unsigned long long)36028797018963952) - b->data[4];
-	field_element51_reduce(&s, result);
+	field_element51_reduce((unsigned long long *)&s, result);
 };
 
 void field_element51_mul(field_element51_s* a, field_element51_s* b, field_element51_s* result)
@@ -334,32 +334,32 @@ void field_element51_mul(field_element51_s* a, field_element51_s* b, field_eleme
 	int128_shift_right_logical(&t1, &c0, 51);
 	int128_unsigned_add(&c1, &c1, &t1);
 	int128_and(&r1, &c0, &LOW_51_BIT_MASK_128);
-	int128_to_uint64(&output[0], &r1);
+	int128_to_uint64((uint64_t *)&output[0], &r1);
 
 	int128_t t2, r2;
 	int128_shift_right_logical(&t2, &c1, 51);
 	int128_unsigned_add(&c2, &c2, &t2);
 	int128_and(&r2, &c1, &LOW_51_BIT_MASK_128);
-	int128_to_uint64(&output[1], &r2);
+	int128_to_uint64((uint64_t *)&output[1], &r2);
 
 	int128_t t3, r3;
 	int128_shift_right_logical(&t3, &c2, 51);
 	int128_unsigned_add(&c3, &c3, &t3);
 	int128_and(&r3, &c2, &LOW_51_BIT_MASK_128);
-	int128_to_uint64(&output[2], &r3);
+	int128_to_uint64((uint64_t *)&output[2], &r3);
 
 	int128_t t4, r4;
 	int128_shift_right_logical(&t4, &c3, 51);
 	int128_unsigned_add(&c4, &c4, &t4);
 	int128_and(&r4, &c3, &LOW_51_BIT_MASK_128);
-	int128_to_uint64(&output[3], &r4);
+	int128_to_uint64((uint64_t *)&output[3], &r4);
 
 	int128_t t5, r5;
 	unsigned long long carry;
 	int128_shift_right_logical(&t5, &c4, 51);
-	int128_to_uint64(&carry, &t5);
+	int128_to_uint64((uint64_t *)&carry, &t5);
 	int128_and(&r5, &c4, &LOW_51_BIT_MASK_128);
-	int128_to_uint64(&output[4], &r5);
+	int128_to_uint64((uint64_t *)&output[4], &r5);
 
 	// To see that this does not overflow, we need out[0] + carry * 19 < 2^64.
 	//
@@ -485,32 +485,32 @@ void field_element51_pow2k(field_element51_s* fe, int k, field_element51_s* resu
 		int128_shift_right_logical(&t1, &c0, 51);
 		int128_unsigned_add(&c1, &c1, &t1);
 		int128_and(&r1, &c0, &LOW_51_BIT_MASK_128);
-		int128_to_uint64(&a[0], &r1);
+		int128_to_uint64((uint64_t *)&a[0], &r1);
 
 		int128_t t2, r2;
 		int128_shift_right_logical(&t2, &c1, 51);
 		int128_unsigned_add(&c2, &c2, &t2);
 		int128_and(&r2, &c1, &LOW_51_BIT_MASK_128);
-		int128_to_uint64(&a[1], &r2);
+		int128_to_uint64((uint64_t *)&a[1], &r2);
 
 		int128_t t3, r3;
 		int128_shift_right_logical(&t3, &c2, 51);
 		int128_unsigned_add(&c3, &c3, &t3);
 		int128_and(&r3, &c2, &LOW_51_BIT_MASK_128);
-		int128_to_uint64(&a[2], &r3);
+		int128_to_uint64((uint64_t *)&a[2], &r3);
 
 		int128_t t4, r4;
 		int128_shift_right_logical(&t4, &c3, 51);
 		int128_unsigned_add(&c4, &c4, &t4);
 		int128_and(&r4, &c3, &LOW_51_BIT_MASK_128);
-		int128_to_uint64(&a[3], &r4);
+		int128_to_uint64((uint64_t *)&a[3], &r4);
 
 		int128_t t5, r5;
 		unsigned long long carry;
 		int128_shift_right_logical(&t5, &c4, 51);
-		int128_to_uint64(&carry, &t5);
+		int128_to_uint64((uint64_t *)&carry, &t5);
 		int128_and(&r5, &c4, &LOW_51_BIT_MASK_128);
-		int128_to_uint64(&a[4], &r5);
+		int128_to_uint64((uint64_t *)&a[4], &r5);
 
 		// To see that this does not overflow, we need a[0] + carry * 19 < 2^64.
 		//
@@ -873,7 +873,7 @@ void scalar_add(scalar52_s* a, scalar52_s* b, scalar52_s* result)
 void _p1(int128_t sum, unsigned long long* p, int128_t* k)
 {
 	unsigned long long llsum;
-	int128_to_int64(&llsum, &sum);
+	int128_to_int64((uint64_t *)&llsum, &sum);
 
 	p[0] = (unsigned long long)(llsum * lfactor()) & ((((unsigned long long)1) << 52) - 1);
 	scalar52_s l = consts_l();
@@ -887,7 +887,7 @@ void _p1(int128_t sum, unsigned long long* p, int128_t* k)
 void _p2(int128_t sum, unsigned long long* r, int128_t* k)
 {
 	unsigned long long llsum;
-	int128_to_int64(&llsum, &sum);
+	int128_to_int64((uint64_t *)&llsum, &sum);
 
 	r[0] = (unsigned long long)(llsum) & ((((unsigned long long)1) << 52) - 1);
 
@@ -1214,7 +1214,7 @@ void field_element51_to_bytes(field_element51_s* v, int8_t* result)
 	memcpy(&cp, v, sizeof(field_element51_s));
 	memcpy(&limbs, v, sizeof(field_element51_s));
 
-	field_element51_reduce(&cp.data, &limbs);
+	field_element51_reduce((unsigned long long *)&cp.data, &limbs);
 
 	unsigned long long q = (limbs.data[0] + 19) >> 51;
 	q = (limbs.data[1] + q) >> 51;
@@ -1477,7 +1477,7 @@ void sign011(strobe_s* signing_transctipt, uint8_t* secret_key, uint8_t* public_
 
 	scalar52_s sk52, k52, sr52, r52, scalar;
 	scalar52_from_bytes(&k, &k52);
-	scalar52_from_bytes(sk_bytes, &sk52);
+	scalar52_from_bytes((scalar_s *)sk_bytes, &sk52);
 	scalar52_from_bytes(&r, &r52);
 	scalar_mul(&k52, &sk52, &sr52);
 	scalar_add(&sr52, &r52, &scalar);
@@ -1491,7 +1491,7 @@ void sign011_s(uint8_t* public_key, uint8_t* secret_key, uint8_t* message, unsig
 {
 	// v 0.1.1.
 	strobe_s ts;
-	init_transcript(&ts, "substrate");
+	init_transcript((strobe_t *)&ts, "substrate");
 
 	strobe_s ts_clone;
 	context_bytes(&ts, &ts_clone, message, message_size);
