@@ -66,7 +66,11 @@ void fill_bytes(strobe_s* signing_transctipt, uint8_t* bytes)
 {
 	uint8_t bytes_s[4] = { 64, 0, 0, 0 };
 	meta_ad(signing_transctipt, bytes_s, 4, 0);
-	memcpy(bytes, prf(signing_transctipt, 64, 0), 64);
+	prf(signing_transctipt, 64, 0, bytes);
+	
+	
+	//prf(signing_transctipt, 64, 0);
+	//memcpy(&bytes[0], prf(signing_transctipt, 64, 0), 64);
 };
 
 // EdwardsBasepointTable
@@ -1170,8 +1174,11 @@ void witness_scalar(strobe_s* signing_transctipt, uint8_t* bytes, scalar_s* resu
 	uint8_t dest[64];
 	unsigned char* empty_label = "";
 	rekey_with_witness_bytes(&rwb, empty_label, bytes);
+	
 	finalize(&rwb);
+	
 	fill_bytes(&rwb, dest);
+	
 	scalar_s s;
 	scalar_from_bytes_mod_order_wide(dest, &s);
 	memcpy(result, &s, sizeof(scalar_s));
@@ -1338,7 +1345,8 @@ void challenge_bytes(strobe_s* signing_transctipt, unsigned char* label, unsigne
 	uint8_t buffer_size[4] = { 64, 0, 0, 0 };
 	meta_ad(signing_transctipt, label, strlen(label), 0);
 	meta_ad(signing_transctipt, buffer_size, 4, 1);
-	memcpy(result, prf(signing_transctipt, 64, 0), 64);
+	prf(signing_transctipt, 64, 0, result);
+	//memcpy(result, prf(signing_transctipt, 64, 0), 64);
 };
 
 void challenge_scalar(strobe_s* signing_transctipt, unsigned char* label, scalar_s* result)
@@ -1435,6 +1443,7 @@ void scalar_divide_scalar_bytes_by_cofactor(uint8_t* key)
 
 void sign011(strobe_s* signing_transctipt, uint8_t* secret_key, uint8_t* public_key, uint8_t* result)
 {
+	
 	// set protocol name
 	commit_bytes(signing_transctipt, "proto-name", "Schnorr-sig", strlen("Schnorr-sig"));
 	// commit point
@@ -1452,6 +1461,7 @@ void sign011(strobe_s* signing_transctipt, uint8_t* secret_key, uint8_t* public_
 
 	edwards_basepoint_table_mul(lts, &r, &ep);
 	free(lts);
+	
 	compressed_ristretto_point_form_edwards(&ep, crp);
 
 	// commit point
@@ -1482,23 +1492,13 @@ void sign011_s(uint8_t* public_key, uint8_t* secret_key, uint8_t* message, unsig
 	// v 0.1.1.
 	strobe_s ts;
 	init_transcript(&ts, "substrate");
-	//unsigned char* message = "test";
 
 	strobe_s ts_clone;
 	context_bytes(&ts, &ts_clone, message, message_size);
 
-	//uint8_t pk[32] = { 214, 120, 179, 224, 12, 66, 56, 136, 139, 191, 8, 219, 190, 29, 125, 231, 124, 63, 28, 161, 252, 113, 165, 162, 131, 119, 15, 6, 247, 205, 18, 5 };
-	//uint8_t sk[64] = { 168, 16, 86, 215, 19, 175, 31, 241, 123, 89, 158, 96, 210, 135, 149, 46, 137, 48, 27, 82, 8, 50, 74, 5, 41, 182, 45, 199, 54, 156, 116, 93, 239, 201, 200, 221, 103, 183, 197, 155, 32, 27, 193, 100, 22, 58, 137, 120, 212, 0, 16, 194, 39, 67, 219, 20, 42, 71, 242, 224, 100, 72, 13, 75 };
 	uint8_t sig[64];
 
 	sign011(&ts_clone, secret_key, public_key, sig);
 
 	memcpy(result, sig, 64);
-
-	//for (int i = 0; i < 64; i++)
-	//{
-	//	printf("%02x", sig[i]);
-	//}
-	//
-	//return 0;
 };

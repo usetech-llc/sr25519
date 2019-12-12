@@ -22,9 +22,10 @@ void ad(transcript_strobe strobe,
 	unsigned int length,
 	_Bool more);
 
-uint8_t* prf(transcript_strobe strobe,
+void prf(transcript_strobe strobe,
 	unsigned int expected_output,
-	_Bool more);
+	_Bool more,
+	uint8_t* result);
 
 void key(transcript_strobe strobe,
 	uint8_t* data,

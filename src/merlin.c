@@ -26,11 +26,12 @@ void ad(transcript_strobe strobe, uint8_t* data, unsigned int length, _Bool more
 	operate(strobe, 0, more, FLAG_A, data, length);
 }
 
-uint8_t* prf(transcript_strobe strobe, unsigned int expected_output, _Bool more)
+void prf(transcript_strobe strobe, unsigned int expected_output, _Bool more, uint8_t* result)
 {
 	uint8_t ret_data[64];
 	operate(strobe, 0, more, FLAG_I | FLAG_A | FLAG_C, ret_data, expected_output);
-	return ret_data;
+	memcpy(result, ret_data, 64);
+	//return ret_data;
 }
 
 void key(transcript_strobe strobe, uint8_t* data, size_t len, _Bool more)
