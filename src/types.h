@@ -55,4 +55,12 @@ typedef struct
 	field_element51_s z;
 } projective_point_s;
 
+typedef struct
+{
+	field_element51_s y_plus_x;
+	field_element51_s y_minus_x;
+	field_element51_s z;
+	field_element51_s t2d;
+} projective_nails_point_s;
+
 #endif

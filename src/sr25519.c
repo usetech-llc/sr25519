@@ -15,10 +15,23 @@ int128_t _m(unsigned long long a, unsigned long long b)
 
 int128_t _m2(int128_t* a, unsigned long long b)
 {
-	int128_t res_hi, res_lo, ba, bb;
+	int128_t res_hi, res_lo, bb;
 	int128_from_uint64(&bb, b);
 	int128_unsigned_multiply(&res_hi, &res_lo, a, &bb);
 	return res_lo;
+};
+
+unsigned long long load8(unsigned char* input)
+{
+	return
+		((unsigned long long)input[0])
+		| (((unsigned long long)input[1]) << 8)
+		| (((unsigned long long)input[2]) << 16)
+		| (((unsigned long long)input[3]) << 24)
+		| (((unsigned long long)input[4]) << 32)
+		| (((unsigned long long)input[5]) << 40)
+		| (((unsigned long long)input[6]) << 48)
+		| (((unsigned long long)input[7]) << 56);
 };
 
 void context_bytes(
@@ -175,15 +188,15 @@ void field_element51_reduce(unsigned long long* limbs, field_element51_s* fe)
 	memcpy(fe->data, limbs, 5 * sizeof(long long));
 };
 
-void field_element51_negate(field_element51_s* fe)
+void field_element51_negate(field_element51_s* fe, field_element51_s* result)
 {
-	field_element51_s s;
-	s.data[0] = ((unsigned long long)36028797018963664) - fe->data[0];
-	s.data[1] = ((unsigned long long)36028797018963952) - fe->data[1];
-	s.data[2] = ((unsigned long long)36028797018963952) - fe->data[2];
-	s.data[3] = ((unsigned long long)36028797018963952) - fe->data[3];
-	s.data[4] = ((unsigned long long)36028797018963952) - fe->data[4];
-	field_element51_reduce((unsigned long long *)&s.data, fe);
+	//field_element51_s s;
+	result->data[0] = ((unsigned long long)36028797018963664) - fe->data[0];
+	result->data[1] = ((unsigned long long)36028797018963952) - fe->data[1];
+	result->data[2] = ((unsigned long long)36028797018963952) - fe->data[2];
+	result->data[3] = ((unsigned long long)36028797018963952) - fe->data[3];
+	result->data[4] = ((unsigned long long)36028797018963952) - fe->data[4];
+	field_element51_reduce((unsigned long long *)&result->data, result);
 };
 
 void affine_niels_points_negate(affine_niels_point_s* pt)
@@ -193,7 +206,7 @@ void affine_niels_points_negate(affine_niels_point_s* pt)
 
 	memcpy(pt->y_plus_x.data, pt->y_minus_x.data, 5 * sizeof(long long));
 	memcpy(pt->y_minus_x.data, buf, 5 * sizeof(long long));
-	field_element51_negate(&pt->xy2d);
+	field_element51_negate(&pt->xy2d, &pt->xy2d);
 };
 
 void lookup_table_select(lookup_table_s* ebp, int8_t x, affine_niels_point_s* result)
@@ -553,6 +566,24 @@ void field_element51_square2(field_element51_s* a, field_element51_s* result)
 	}
 };
 
+void edwards_point_add_projective_nails(edwards_point_s* a, projective_nails_point_s* b, complete_point_s* result)
+{
+	field_element51_s y_plus_x, y_minus_x, pp, mm, tt2d, zz, zz2;
+	field_element51_add(&a->y, &a->x, &y_plus_x);
+	field_element51_sub(&a->y, &a->x, &y_minus_x);
+	field_element51_mul(&y_plus_x, &b->y_plus_x, &pp);
+	field_element51_mul(&y_minus_x, &b->y_minus_x, &mm);
+	field_element51_mul(&a->t, &b->t2d, &tt2d);
+	field_element51_mul(&a->z, &b->z, &zz);
+	field_element51_add(&zz, &zz, &zz2);
+
+	//complete_point_s cp;
+	field_element51_sub(&pp, &mm, &result->x);
+	field_element51_add(&pp, &mm, &result->y);
+	field_element51_add(&zz2, &tt2d, &result->z);
+	field_element51_sub(&zz2, &tt2d, &result->t);
+};
+
 void edwards_point_add(edwards_point_s* a, affine_niels_point_s* b, complete_point_s* result)
 {
 	field_element51_s y_plus_x, y_minus_x, pp, mm, txy2d, z2;
@@ -563,7 +594,7 @@ void edwards_point_add(edwards_point_s* a, affine_niels_point_s* b, complete_poi
 	field_element51_mul(&a->t, &b->xy2d, &txy2d);
 	field_element51_add(&a->z, &a->z, &z2);
 
-	complete_point_s cp;
+	//complete_point_s cp;
 	field_element51_sub(&pp, &mm, &result->x);
 	field_element51_add(&pp, &mm, &result->y);
 	field_element51_add(&z2, &txy2d, &result->z);
@@ -578,11 +609,34 @@ void complete_point_to_extended(complete_point_s* cp, edwards_point_s* result)
 	field_element51_mul(&cp->x, &cp->y, &result->t);
 };
 
+void complete_point_to_projective(complete_point_s* cp, projective_point_s* result)
+{
+	field_element51_mul(&cp->x, &cp->t, &result->x);
+	field_element51_mul(&cp->y, &cp->z, &result->y);
+	field_element51_mul(&cp->z, &cp->t, &result->z);
+};
+
 void edwards_point_to_projective(edwards_point_s* cp, projective_point_s* p)
 {
 	memcpy(&p->x.data, &cp->x.data, sizeof(long long) * 5);
 	memcpy(&p->y.data, &cp->y.data, sizeof(long long) * 5);
 	memcpy(&p->z.data, &cp->z.data, sizeof(long long) * 5);
+};
+
+void edwards_point_to_projective_nails(edwards_point_s* cp, projective_nails_point_s* p)
+{
+	field_element51_s c1;
+	c1 = edwards_d2();
+
+	field_element51_s f1, f2, f3;
+	field_element51_add(&cp->y, &cp->x, &f1);
+	field_element51_sub(&cp->y, &cp->x, &f2);
+	field_element51_mul(&cp->t, &c1, &f3);
+
+	memcpy(&p->y_plus_x, &f1, sizeof(field_element51_s));
+	memcpy(&p->y_minus_x, &f2, sizeof(field_element51_s));
+	memcpy(&p->z, &cp->z, sizeof(field_element51_s));
+	memcpy(&p->t2d, &f3, sizeof(field_element51_s));
 };
 
 void field_element51_pow22501(field_element51_s* a, field_element51_s* result1, field_element51_s* result2)
@@ -702,7 +756,7 @@ void field_element51_sqrt_ratio_i(field_element51_s* u, field_element51_s* v, fi
 
 	bool correct_sign_sqrt = field_element51_ct_eq(&check, u);
 	memcpy(&nu, u, sizeof(field_element51_s));
-	field_element51_negate(&nu);
+	field_element51_negate(&nu, &nu);
 	bool flipped_sign_sqrt = field_element51_ct_eq(&check, &nu);
 	field_element51_mul(&nu, &i, &s1);
 	bool flipped_sign_sqrt_i = field_element51_ct_eq(&check, &s1);
@@ -717,7 +771,7 @@ void field_element51_sqrt_ratio_i(field_element51_s* u, field_element51_s* v, fi
 	bool r_is_negative = field_element51_is_negative(&r);
 	if (r_is_negative)
 	{
-		field_element51_negate(&r);
+		field_element51_negate(&r, &r);
 	}
 
 	bool was_nonzero_square = correct_sign_sqrt | flipped_sign_sqrt;
@@ -741,13 +795,6 @@ void projective_point_double(projective_point_s* pp, complete_point_s* result)
 	memcpy(&result->y, &yy_plus_xx, sizeof(long long) * 5);
 	memcpy(&result->z, &yy_minus_xx, sizeof(long long) * 5);
 	field_element51_sub(&zz2, &yy_minus_xx, &result->t);
-};
-
-void complete_point_to_projective(complete_point_s* cp, projective_point_s* result)
-{
-	field_element51_mul(&cp->x, &cp->t, &result->x);
-	field_element51_mul(&cp->y, &cp->z, &result->y);
-	field_element51_mul(&cp->z, &cp->t, &result->z);
 };
 
 /// Compute \\([2\^k] P \\) by successive doublings. Requires \\( k > 0 \\).
@@ -879,7 +926,7 @@ void _p1(int128_t sum, unsigned long long* p, int128_t* k)
 	scalar52_s l = consts_l();
 
 	int128_t t = _m(p[0], l.dword[0]);
-	int128_t ko, ko2;
+	int128_t ko;
 	int128_signed_add(&ko, &sum, &t);
 	int128_shift_right_logical(k, &ko, 52);
 };
@@ -1190,6 +1237,28 @@ void invsqrt(field_element51_s* v, field_element51_s* result, bool* result2)
 	field_element51_sqrt_ratio_i(&fe_one, v, result, result2);
 };
 
+void field_element51_from_bytes(unsigned char* bytes, field_element51_s* result)
+{
+	unsigned long long low_51_bit_mask = ((unsigned long long)1 << 51) - 1;
+
+	// load bits [  0, 64), no shift
+	unsigned long long v1 = load8(&bytes[0]) & low_51_bit_mask;
+	// load bits [ 48,112), shift to [ 51,112)
+	unsigned long long v2 = (load8(&bytes[6]) >> 3) & low_51_bit_mask;
+	// load bits [ 96,160), shift to [102,160)
+	unsigned long long v3 = (load8(&bytes[12]) >> 6) & low_51_bit_mask;
+	// load bits [152,216), shift to [153,216)
+	unsigned long long v4 = (load8(&bytes[19]) >> 1)& low_51_bit_mask;
+	// load bits [192,256), shift to [204,112)
+	unsigned long long v5 = (load8(&bytes[24]) >> 12) & low_51_bit_mask;
+
+	result->data[0] = v1;
+	result->data[1] = v2;
+	result->data[2] = v3;
+	result->data[3] = v4;
+	result->data[4] = v5;
+};
+
 void field_element51_to_bytes(field_element51_s* v, int8_t* result)
 {
 	// Let h = limbs[0] + limbs[1]*2^51 + ... + limbs[4]*2^204.
@@ -1292,7 +1361,7 @@ void compressed_ristretto_point_form_edwards(edwards_point_s* ep, uint8_t* resul
 	field_element51_mul(&e.x, &e.y, &u2);
 
 	// Ignore return value since this is always square
-	field_element51_s inv, it1, it2, i1, i2, z_inv, den_inv;
+	field_element51_s inv, it1, it2, i1, i2, z_inv;
 	bool invb;
 	field_element51_square(&u2, &it1);
 	field_element51_mul(&u1, &it1, &it2);
@@ -1326,7 +1395,7 @@ void compressed_ristretto_point_form_edwards(edwards_point_s* ep, uint8_t* resul
 
 	if (neg)
 	{
-		field_element51_negate(&e.y);
+		field_element51_negate(&e.y, &e.y);
 	}
 
 	field_element51_sub(&e.z, &e.y, &t1);
@@ -1334,7 +1403,7 @@ void compressed_ristretto_point_form_edwards(edwards_point_s* ep, uint8_t* resul
 
 	if (field_element51_is_negative(&s))
 	{
-		field_element51_negate(&s);
+		field_element51_negate(&s, &s);
 	}
 
 	field_element51_to_bytes(&s, result);
@@ -1422,9 +1491,74 @@ void scalar52_to_bytes(scalar52_s* scalar, scalar_s* result)
 	memcpy(result, s, 32);
 };
 
+void get_edwards_point_from_pk(unsigned char* public_key, edwards_point_s* ep)
+{
+	field_element51_s s, ss, one, u1, u2, u2_sqr, n_edwards_d, v, I, Dx, Dy, x, y, t;
+	field_element51_s t1, t2;
+	field_element51_from_bytes(public_key, &s);
+
+	// Step 2.  Compute (X:Y:Z:T).
+	one = field_element51_one();
+	field_element51_square(&s, &ss);
+	field_element51_sub(&one, &ss, &u1);   //  1 + as²
+	field_element51_add(&one, &ss, &u2);   //  1 - as²    where a=-1
+	field_element51_square(&u2, &u2_sqr);  // (1 - as²)²
+
+	// v == ad(1+as²)² - (1-as²)²            where d=-121665/121666
+	n_edwards_d = edwards_d();
+	field_element51_negate(&n_edwards_d, &n_edwards_d);
+	field_element51_square(&u1, &t1);
+	field_element51_mul(&n_edwards_d, &t1, &t2);
+	field_element51_sub(&t2, &u2_sqr, &v);
+
+	field_element51_mul(&v, &u2_sqr, &t1);
+
+	bool r;
+	invsqrt(&t1, &I, &r);					// 1/sqrt(v*u_2²)
+
+	field_element51_mul(&I, &u2, &Dx);		// 1/sqrt(v)
+	field_element51_mul(&I, &Dx, &t1);
+	field_element51_mul(&t1, &v, &Dy);		// 1/u2
+
+	// x == | 2s/sqrt(v) | == + sqrt(4s²/(ad(1+as²)² - (1-as²)²))
+	field_element51_add(&s, &s, &t1);
+	field_element51_mul(&t1, &Dx, &x);
+
+	if (field_element51_is_negative(&x))
+	{
+		field_element51_negate(&x, &x);
+	}
+
+	// y == (1-as²)/(1+as²)
+	field_element51_mul(&u1, &Dy, &y);
+
+	// t == ((1+as²) sqrt(4s²/(ad(1+as²)² - (1-as²)²)))/(1-as²)
+	field_element51_mul(&x, &y, &t);
+
+	unsigned int size_s = sizeof(field_element51_s);
+
+	memcpy(&ep->x, &x, size_s);
+	memcpy(&ep->y, &y, size_s);
+	memcpy(&ep->z, &one, size_s);
+	memcpy(&ep->t, &t, size_s);
+};
+
+void edwards_point_negate(edwards_point_s* point, edwards_point_s* result)
+{
+	field_element51_s nx, nt;
+	unsigned int size = sizeof(field_element51_s);
+	
+	field_element51_negate(&result->x, &nx);
+	field_element51_negate(&result->t, &nt);
+
+	memcpy(&result->x, &nx, size);
+	memcpy(&result->y, &point->y, size);
+	memcpy(&result->z, &point->z, size);
+	memcpy(&result->t, &nt, size);
+};
+
 void signature_to_bytes011(uint8_t* r, scalar_s* s, uint8_t* result)
 {
-	uint8_t bytes[64];
 	memcpy(result, r, 32);
 	memcpy(result + 32, s->bytes, 32);
 };
@@ -1441,9 +1575,248 @@ void scalar_divide_scalar_bytes_by_cofactor(uint8_t* key)
 	}
 };
 
-void sign011(strobe_s* signing_transctipt, uint8_t* secret_key, uint8_t* public_key, uint8_t* result)
+void signature_from_bytes(uint8_t* key, uint8_t* r, scalar_s* s)
 {
-	
+	memcpy(r, key, 32);
+	memcpy(s->bytes, &key[32], 32);
+};
+
+void scalar52_get_u64data(scalar_s* s, unsigned long long* result)
+{
+	int size = sizeof(unsigned long long);
+	memcpy(&result[0], &s->bytes[0], size);
+	memcpy(&result[1], &s->bytes[8], size);
+	memcpy(&result[2], &s->bytes[16], size);
+	memcpy(&result[3], &s->bytes[24], size);
+	result[4] = 0;
+};
+
+void non_adjacent_form(scalar_s* s, int size, signed char* result)
+{
+	signed char naf[256];
+	memset(naf, 0, 256);
+	unsigned long long x_u64[5];
+
+	scalar52_get_u64data(s, x_u64);
+
+	unsigned long long width, window_mask;
+	width = (unsigned long long)1 << size;
+	window_mask = width - 1;
+
+	int pos = 0;
+	int carry = 0;
+
+	while (pos < 256)
+	{
+		// Construct a buffer of bits of the scalar, starting at bit `pos`
+		int u64_idx = pos / 64;
+		int bit_idx = pos % 64;
+		unsigned long long bit_buf;
+
+		if (bit_idx < 64 - size) {
+			// This window's bits are contained in a single u64
+			bit_buf = x_u64[u64_idx] >> bit_idx;
+		}
+		else
+		{
+			// Combine the current u64's bits with the bits from the next u64
+			bit_buf = (x_u64[u64_idx] >> bit_idx) | (x_u64[1 + u64_idx] << (64 - bit_idx));
+		}
+
+		// Add the carry into the current window
+		unsigned long long window = (unsigned long long)carry + (bit_buf & (unsigned long long)window_mask);
+
+		if ((window & 1) == 0)
+		{
+			// If the window value is even, preserve the carry and continue.
+			// Why is the carry preserved?
+			// If carry == 0 and window & 1 == 0, then the next carry should be 0
+			// If carry == 1 and window & 1 == 0, then bit_buf & 1 == 1 so the next carry should be 1
+			pos += 1;
+			continue;
+		}
+
+		if (window < (unsigned long long)(width / 2))
+		{
+			carry = 0;
+			naf[pos] = (signed char)window;
+		}
+		else
+		{
+			carry = 1;
+			naf[pos] = (signed char)((signed char)window - (signed char)width);
+		}
+
+		pos += size;
+	}
+
+	memcpy(result, naf, 256);
+};
+
+void edwards_point_double(edwards_point_s* point, edwards_point_s* result)
+{
+	projective_point_s pp;
+	complete_point_s cp;
+	edwards_point_to_projective(point, &pp);
+	projective_point_double(&pp, &cp);
+	complete_point_to_extended(&cp, result);
+};
+
+projective_point_s projective_point_identity()
+{
+	projective_point_s epi;
+	epi.x = field_element51_zero();
+	epi.y = field_element51_one();
+	epi.z = field_element51_one();
+	return epi;
+};
+
+void edwards_point_sub_affine_nails(edwards_point_s* a, affine_niels_point_s* b, complete_point_s* result)
+{
+	field_element51_s y_plus_x, y_minus_x, pm, mp, txy2d, z2;
+	field_element51_add(&a->y, &a->x, &y_plus_x);
+	field_element51_sub(&a->y, &a->x, &y_minus_x);
+	field_element51_mul(&y_plus_x, &b->y_minus_x, &pm);
+	field_element51_mul(&y_minus_x, &b->y_plus_x, &mp);
+	field_element51_mul(&a->t, &b->xy2d, &txy2d);
+	field_element51_add(&a->z, &a->z, &z2);
+
+	field_element51_sub(&pm, &mp, &result->x);
+	field_element51_add(&pm, &mp, &result->y);
+	field_element51_sub(&z2, &txy2d, &result->z);
+	field_element51_add(&z2, &txy2d, &result->t);
+};
+
+void edwards_point_sub_projective_nails(edwards_point_s* a, projective_nails_point_s* b, complete_point_s* result)
+{
+	field_element51_s y_plus_x, y_minus_x, pm, mp, tt2d, zz, zz2;
+	field_element51_add(&a->y, &a->x, &y_plus_x);
+	field_element51_sub(&a->y, &a->x, &y_minus_x);
+	field_element51_mul(&y_plus_x, &b->y_minus_x, &pm);
+	field_element51_mul(&y_minus_x, &b->y_plus_x, &mp);
+	field_element51_mul(&a->t, &b->t2d, &tt2d);
+	field_element51_mul(&a->z, &b->z, &zz);
+	field_element51_add(&zz, &zz, &zz2);
+
+	field_element51_sub(&pm, &mp, &result->x);
+	field_element51_add(&pm, &mp, &result->y);
+	field_element51_sub(&zz2, &tt2d, &result->z);
+	field_element51_add(&zz2, &tt2d, &result->t);
+};
+
+void naf_lookup_table_from_edwards_point(edwards_point_s* point, projective_nails_point_s* result)
+{
+	for (int i = 0; i < 8; i++)
+	{
+		edwards_point_to_projective_nails(point, &result[i]);
+	}
+
+	edwards_point_s A2;
+	edwards_point_double(point, &A2);
+
+	for (int i = 0; i <= 6; i++)
+	{
+		complete_point_s cp;
+		edwards_point_s ep;
+		edwards_point_add_projective_nails(&A2, &result[i], &cp);
+		complete_point_to_extended(&cp, &ep);
+		edwards_point_to_projective_nails(&ep, &result[i + 1]);
+	}
+	/// Now result = [A, 3A, 5A, 7A, 9A, 11A, 13A, 15A]
+};
+
+void projective_point_to_extended(projective_point_s* a, edwards_point_s* result)
+{
+	field_element51_mul(&a->x, &a->z, &result->x);
+	field_element51_mul(&a->y, &a->z, &result->y);
+	field_element51_square(&a->z, &result->z);
+	field_element51_mul(&a->x, &a->y, &result->t);
+};
+
+/// Compute \\(aA + bB\\) in variable time, where \\(B\\) is the
+/// Ristretto basepoint.
+void vartime_double_scalar_mul_basepoint(scalar_s* a, edwards_point_s* A, scalar_s* b, edwards_point_s* result)
+{
+	signed char a_naf[256], b_naf[256];
+	non_adjacent_form(a, 5, a_naf);
+	non_adjacent_form(b, 8, b_naf);
+	int i = 0;
+
+	/// Find starting index
+	for (int ind = 255; ind >= 0; ind--)
+	{
+		i = ind;
+		if (a_naf[i] != 0 || b_naf[i] != 0)
+		{
+			break;
+		}
+	}
+
+	affine_niels_point_s* table_b;
+	projective_nails_point_s table_a[8];
+	naf_lookup_table_from_edwards_point(A, table_a);
+	table_b = AFFINE_ODD_MULTIPLES_OF_BASEPOINT();
+
+	projective_point_s r = projective_point_identity();
+
+	while (i >= 0)
+	{
+		complete_point_s t;
+		projective_point_double(&r, &t);
+
+		if (a_naf[i] > 0)
+		{
+			edwards_point_s t1;
+			projective_nails_point_s t2;
+			
+			complete_point_to_extended(&t, &t1);
+			int i1 = abs(a_naf[i] / 2);
+			t2 = table_a[i1];
+			edwards_point_add_projective_nails(&t1, &table_a[i1], &t);
+		}
+		else if (a_naf[i] < 0)
+		{
+			edwards_point_s t1;
+			projective_nails_point_s t2;
+
+			complete_point_to_extended(&t, &t1);
+			int i1 = abs(a_naf[i] / 2);
+			t2 = table_a[i1];
+			edwards_point_sub_projective_nails(&t1, &table_a[i1], &t);
+		}
+
+		if (b_naf[i] > 0)
+		{
+			edwards_point_s t1;
+			affine_niels_point_s t2;
+
+			complete_point_to_extended(&t, &t1);
+			int i1 = abs(b_naf[i] / 2);
+			t2 = table_b[i1];
+			edwards_point_add(&t1, &table_b[i1], &t);
+		}
+		if (b_naf[i] < 0)
+		{
+			edwards_point_s t1;
+			affine_niels_point_s t2;
+
+			complete_point_to_extended(&t, &t1);
+			int i1 = abs(b_naf[i] / 2);
+			t2 = table_b[i1];
+			edwards_point_sub_affine_nails(&t1, &table_b[i1], &t);
+		}
+
+		complete_point_to_projective(&t, &r);
+		i--;
+	}
+
+	free(table_b);
+
+	projective_point_to_extended(&r, result);
+};
+
+void sign011(strobe_s* signing_transctipt, uint8_t* secret_key, uint8_t* public_key, uint8_t* result)
+{	
 	// set protocol name
 	commit_bytes(signing_transctipt, "proto-name", "Schnorr-sig", strlen("Schnorr-sig"));
 	// commit point
@@ -1461,7 +1834,7 @@ void sign011(strobe_s* signing_transctipt, uint8_t* secret_key, uint8_t* public_
 
 	edwards_basepoint_table_mul(lts, &r, &ep);
 	free(lts);
-	
+
 	compressed_ristretto_point_form_edwards(&ep, crp);
 
 	// commit point
@@ -1501,4 +1874,50 @@ void sign011_s(uint8_t* public_key, uint8_t* secret_key, uint8_t* message, unsig
 	sign011(&ts_clone, secret_key, public_key, sig);
 
 	memcpy(result, sig, 64);
+};
+
+_Bool verify011(strobe_s* signing_transctipt, uint8_t* signature, uint8_t* public_key)
+{
+	// set protocol name
+	commit_bytes(signing_transctipt, "proto-name", "Schnorr-sig", strlen("Schnorr-sig"));
+	// commit point
+	commit_bytes(signing_transctipt, "pk", public_key, 32);
+
+	uint8_t sigS[32], sigR[32], vsig[32];
+	signature_from_bytes(signature, sigR, sigS);
+
+	// commit point
+	commit_bytes(signing_transctipt, "no", sigR, 32);
+	
+	scalar_s k;
+	challenge_scalar(signing_transctipt, "", &k); // context, message, A/public_key, R=rG
+
+	edwards_point_s negate_ep, R;
+	get_edwards_point_from_pk(public_key, &negate_ep);
+	edwards_point_negate(&negate_ep, &negate_ep);
+
+	vartime_double_scalar_mul_basepoint(&k, &negate_ep, sigS, &R);
+	compressed_ristretto_point_form_edwards(&R, vsig);
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (vsig[i] != sigR[i])
+		{
+			return 0;
+		}
+	}
+
+	return 1;
+};
+
+_Bool verify011_s(uint8_t* signature, uint8_t* public_key, uint8_t* message, unsigned int message_size)
+{
+	// v 0.1.1.
+	strobe_s ts;
+	init_transcript((strobe_t *)&ts, "substrate");
+
+	strobe_s ts_clone;
+	context_bytes(&ts, &ts_clone, message, message_size);
+
+	return verify011(&ts_clone, signature, public_key);
 };
