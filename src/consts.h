@@ -8,7 +8,7 @@
 // consts
 lookup_table_s* ED25519_basepoint_table_inner()
 {
-	unsigned int p = malloc(sizeof(lookup_table_s) * 32);
+	lookup_table_s *p = malloc(sizeof(lookup_table_s) * 32);
 
 	lookup_table_s l;
 	affine_niels_point_s s;
@@ -87,7 +87,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 0), &l, sizeof(lookup_table_s));
+	memcpy(p + 0, &l, sizeof(lookup_table_s));
 	// 1
 	{
 		field_element51_s ypx = { 1368953770187805, 3042147450398169, 2689308289352409, 2142576377050579, 1932081720066286 };
@@ -162,7 +162,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 1), &l, sizeof(lookup_table_s));
+	memcpy(p + 1, &l, sizeof(lookup_table_s));
 	// 2
 	{
 		field_element51_s ypx = { 3180171966714267, 2147692869914563, 1455665844462196, 1986737809425946, 2437006863943337 };
@@ -237,7 +237,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 2), &l, sizeof(lookup_table_s));
+	memcpy(p + 2, &l, sizeof(lookup_table_s));
 	// 3
 	{
 		field_element51_s ypx = { 717255318455100, 519313764361315, 2080406977303708, 541981206705521, 774328150311600 };
@@ -312,7 +312,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 3), &l, sizeof(lookup_table_s));
+	memcpy(p + 3, &l, sizeof(lookup_table_s));
 	// 4
 	{
 		field_element51_s ypx = { 3859970785658325, 2667608874045675, 1350468408164765, 2038620059057678, 3278704299674360 };
@@ -387,7 +387,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 4), &l, sizeof(lookup_table_s));
+	memcpy(p + 4, &l, sizeof(lookup_table_s));
 	// 5
 	{
 		field_element51_s ypx = { 1364039144731711, 1897497433586190, 2203097701135459, 2397261210496499, 1349844460790698 };
@@ -462,7 +462,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 5), &l, sizeof(lookup_table_s));
+	memcpy(p + 5, &l, sizeof(lookup_table_s));
 	// 6
 	{
 		field_element51_s ypx = { 3988217766743784, 726531315520507, 1833335034432527, 1629442561574747, 2876218732971333 };
@@ -537,7 +537,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 6), &l, sizeof(lookup_table_s));
+	memcpy(p + 6, &l, sizeof(lookup_table_s));
 	// 7
 	{
 		field_element51_s ypx = { 427904865186293, 1703211129693455, 1585368107547509, 3688784302429584, 3012988348299225 };
@@ -612,7 +612,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 7), &l, sizeof(lookup_table_s));
+	memcpy(p + 7, &l, sizeof(lookup_table_s));
 	// 8
 	{
 		field_element51_s ypx = { 2926794589205781, 2517835660016036, 826951213393477, 1405007746162285, 1781791018620876 };
@@ -687,7 +687,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 8), &l, sizeof(lookup_table_s));
+	memcpy(p + 8, &l, sizeof(lookup_table_s));
 	// 9
 	{
 		field_element51_s ypx = { 1219260086131896, 2898968820282063, 2331400938444953, 2161724213426747, 2656661710745446 };
@@ -762,7 +762,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 9), &l, sizeof(lookup_table_s));
+	memcpy(p + 9, &l, sizeof(lookup_table_s));
 	// 10
 	{
 		field_element51_s ypx = { 2439789269177838, 681223515948274, 1933493571072456, 1872921007304880, 2739962177820919 };
@@ -837,7 +837,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 10), &l, sizeof(lookup_table_s));
+	memcpy(p + 10, &l, sizeof(lookup_table_s));
 	// 11
 	{
 		field_element51_s ypx = { 3008217384184691, 2489682092917849, 2136263418594015, 1701968045454886, 2955512998822720 };
@@ -912,7 +912,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 11), &l, sizeof(lookup_table_s));
+	memcpy(p + 11, &l, sizeof(lookup_table_s));
 	// 12
 	{
 		field_element51_s ypx = { 2361321796251793, 3967057562270386, 1112231216891515, 2046641005101484, 2386048970842261 };
@@ -987,7 +987,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 12), &l, sizeof(lookup_table_s));
+	memcpy(p + 12, &l, sizeof(lookup_table_s));
 	// 13
 	{
 		field_element51_s ypx = { 2608268623334125, 3034173730618399, 1718002439402869, 3644022065904502, 663171266061950 };
@@ -1062,7 +1062,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 13), &l, sizeof(lookup_table_s));
+	memcpy(p + 13, &l, sizeof(lookup_table_s));
 	// 14
 	{
 		field_element51_s ypx = { 2201150872731785, 2180241023425241, 2349463270108411, 1633405770247823, 3100744856129234 };
@@ -1137,7 +1137,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 14), &l, sizeof(lookup_table_s));
+	memcpy(p + 14, &l, sizeof(lookup_table_s));
 	// 15
 	{
 		field_element51_s ypx = { 2102881477513865, 3822074379630609, 1573617900503707, 2270462449417831, 2232324307922097 };
@@ -1212,7 +1212,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 15), &l, sizeof(lookup_table_s));
+	memcpy(p + 15, &l, sizeof(lookup_table_s));
 	// 16
 	{
 		field_element51_s ypx = { 849646212451983, 1410198775302919, 2325567699868943, 1641663456615811, 3014056086137659 };
@@ -1287,7 +1287,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 16), &l, sizeof(lookup_table_s));
+	memcpy(p + 16, &l, sizeof(lookup_table_s));
 	// 17
 	{
 		field_element51_s ypx = { 2605560604520539, 1598361541848742, 3374705511887547, 4174333403844152, 2670907514351827 };
@@ -1362,7 +1362,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 17), &l, sizeof(lookup_table_s));
+	memcpy(p + 17, &l, sizeof(lookup_table_s));
 	// 18
 	{
 		field_element51_s ypx = { 2529951391976704, 1810282338562946, 1771599529530998, 3635459223356879, 2937173228157088 };
@@ -1437,7 +1437,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 18), &l, sizeof(lookup_table_s));
+	memcpy(p + 18, &l, sizeof(lookup_table_s));
 	// 19
 	{
 		field_element51_s ypx = { 155711679280637, 681100400509288, 389811735211209, 2135723811340709, 2660533024889373 };
@@ -1512,7 +1512,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 19), &l, sizeof(lookup_table_s));
+	memcpy(p + 19, &l, sizeof(lookup_table_s));
 	// 20
 	{
 		field_element51_s ypx = { 1899935429242705, 1602068751520477, 940583196550370, 2334230882739107, 1540863155745695 };
@@ -1587,7 +1587,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 20), &l, sizeof(lookup_table_s));
+	memcpy(p + 20, &l, sizeof(lookup_table_s));
 	// 21
 	{
 		field_element51_s ypx = { 1248731221520740, 1465200936117687, 2792603306395388, 2304778448366139, 2513234303861356 };
@@ -1662,7 +1662,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 21), &l, sizeof(lookup_table_s));
+	memcpy(p + 21, &l, sizeof(lookup_table_s));
 	// 22
 	{
 		field_element51_s ypx = { 3618358370049178, 1448606567552085, 3730680834630016, 2417602993041145, 1115718458123497 };
@@ -1737,7 +1737,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 22), &l, sizeof(lookup_table_s));
+	memcpy(p + 22, &l, sizeof(lookup_table_s));
 	// 23
 	{
 		field_element51_s ypx = { 2705718263383616, 2358206633614248, 2072540975937134, 308588860670238, 1304394580755385 };
@@ -1812,7 +1812,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 23), &l, sizeof(lookup_table_s));
+	memcpy(p + 23, &l, sizeof(lookup_table_s));
 	// 24
 	{
 		field_element51_s ypx = { 1632352921721536, 1833328609514701, 2092779091951987, 4175756015558474, 2210068022482918 };
@@ -1887,7 +1887,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 24), &l, sizeof(lookup_table_s));
+	memcpy(p + 24, &l, sizeof(lookup_table_s));
 	// 25
 	{
 		field_element51_s ypx = { 1957943897155478, 1788667368028035, 2389492723714354, 2252839333292309, 3078204576998275 };
@@ -1962,7 +1962,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 25), &l, sizeof(lookup_table_s));
+	memcpy(p + 25, &l, sizeof(lookup_table_s));
 	// 26
 	{
 		field_element51_s ypx = { 2911103727614740, 1956447718227572, 1830568515922666, 3092868863429656, 1669607124206367 };
@@ -2037,7 +2037,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 26), &l, sizeof(lookup_table_s));
+	memcpy(p + 26, &l, sizeof(lookup_table_s));
 	// 27
 	{
 		field_element51_s ypx = { 1835401379538542, 173900035308392, 818247630716732, 4013900225838034, 1021506399448290 };
@@ -2112,7 +2112,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 27), &l, sizeof(lookup_table_s));
+	memcpy(p + 27, &l, sizeof(lookup_table_s));
 	// 28
 	{
 		field_element51_s ypx = { 1689713572022124, 2845654372939621, 3229894858477217, 1985127338729498, 3927868934032873 };
@@ -2187,7 +2187,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 28), &l, sizeof(lookup_table_s));
+	memcpy(p + 28, &l, sizeof(lookup_table_s));
 	// 29
 	{
 		field_element51_s ypx = { 2723435829455580, 2924255216478824, 1804995246884102, 1842309243470804, 3753662318666930 };
@@ -2262,7 +2262,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 29), &l, sizeof(lookup_table_s));
+	memcpy(p + 29, &l, sizeof(lookup_table_s));
 	// 30
 	{
 		field_element51_s ypx = { 2237039662793603, 2249022333361206, 2058613546633703, 2401253908530527, 2215176649164581 };
@@ -2337,7 +2337,7 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 30), &l, sizeof(lookup_table_s));
+	memcpy(p + 30, &l, sizeof(lookup_table_s));
 	// 31
 	{
 		field_element51_s ypx = { 2299141301692989, 1891414891220256, 983894663308928, 2427961581972066, 3378060928864955 };
@@ -2412,14 +2412,14 @@ lookup_table_s* ED25519_basepoint_table_inner()
 		memcpy(&l.affine_niels_points[7], &s, sizeof(affine_niels_point_s));
 	}
 
-	memcpy(p + (sizeof(lookup_table_s) * 31), &l, sizeof(lookup_table_s));
+	memcpy(p + 31, &l, sizeof(lookup_table_s));
 
-	return (lookup_table_s*)p;
+	return p;
 };
 
 affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 {
-	unsigned int p = malloc(sizeof(affine_niels_point_s) * 64);
+	affine_niels_point_s *p = malloc(sizeof(affine_niels_point_s) * 64);
 
 	affine_niels_point_s s;
 	{
@@ -2429,7 +2429,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 0), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 0, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1601611775252272, 1720807796594148, 1132070835939856, 3512254832574799, 2147779492816910 };
@@ -2438,7 +2438,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 1), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 1, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 769950342298400, 2384754244604994, 3095885746880802, 3225892188161580, 2977876099231263 };
@@ -2447,7 +2447,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 2), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 2, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2916800678241215, 2065379846933858, 2622030924071124, 2602788184473875, 1233371373142984 };
@@ -2456,7 +2456,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 3), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 3, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1802695059464988, 1664899123557221, 2845359304426105, 2160434469266658, 3179370264440279 };
@@ -2465,7 +2465,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 4), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 4, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 4222693909998302, 2779866139518454, 1619374932191226, 2207306624415883, 1169170329061080 };
@@ -2474,7 +2474,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 5), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 5, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2465253816303469, 3191571337672685, 1159882208056013, 2569188183312765, 621213314200686 };
@@ -2483,7 +2483,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 6), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 6, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1913163449625248, 2712579013977241, 2193883288642313, 1008900146920800, 1721983679009502 };
@@ -2492,7 +2492,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 7), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 7, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1819621230288238, 2735700366193240, 1755134670739586, 3080648199451191, 4172807995775876 };
@@ -2501,7 +2501,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 8), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 8, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2105824306960939, 1387520302709358, 3633176580451016, 2211816663841753, 1629085891776489 };
@@ -2510,7 +2510,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 9), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 9, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3552316659826612, 1254279525791875, 1609927932077699, 3578654071679972, 3750681296069893 };
@@ -2519,7 +2519,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 10), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 10, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3679150557957763, 1319179453661745, 497496853611112, 2665464286942351, 1208137952365560 };
@@ -2528,7 +2528,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 11), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 11, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1111146849833253, 2016430049079759, 1860522747477948, 3537164738290194, 4137142824844184 };
@@ -2537,7 +2537,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 12), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 12, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 676293365438898, 2850296017886344, 1205350322490195, 2763699392265669, 2133931188538142 };
@@ -2546,7 +2546,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 13), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 13, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2365217962409710, 2061307169694064, 1887478590157603, 2169639621284316, 2373810867477200 };
@@ -2555,7 +2555,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 14), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 14, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1431537716602643, 2024827957433813, 3746434518400495, 1087794891033550, 2156817571680455 };
@@ -2564,7 +2564,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 15), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 15, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2311213117823762, 3296668540922318, 2004276520649823, 1861500579441125, 3148029033359833 };
@@ -2573,7 +2573,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 16), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 16, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3544335535746750, 2367994491347456, 2567261456502612, 1854058085060971, 2263545563461076 };
@@ -2582,7 +2582,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 17), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 17, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 993787326657446, 3868807161609258, 1615796046728943, 2514644292681953, 2059021068660907 };
@@ -2591,7 +2591,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 18), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 18, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1673474571932262, 2409784519770613, 2636095316260487, 2761112584601925, 3333713288149876 };
@@ -2600,7 +2600,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 19), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 19, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1765281781276487, 2863247187455184, 2589075472439062, 1386435905543054, 2182338478845320 };
@@ -2609,7 +2609,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 20), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 20, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2185209688340293, 1309276076461009, 2514740038571278, 3994889904012999, 3018098826231021 };
@@ -2618,7 +2618,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 21), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 21, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2389287991277873, 403851022333257, 1597473361477193, 2953351602509212, 2135174663049062 };
@@ -2627,7 +2627,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 22), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 22, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1795645928096646, 306878154408959, 2924901319092394, 2801261341654799, 1653782432983523 };
@@ -2636,7 +2636,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 23), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 23, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1082660122598844, 2545055705583789, 3888919679589007, 1670283344995811, 3403239134794618 };
@@ -2645,7 +2645,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 24), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 24, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 811329918113934, 2783463529007378, 1769095754634835, 2970819621866866, 881037178164325 };
@@ -2654,7 +2654,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 25), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 25, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2478728492077816, 2780289048655501, 2328687177473769, 4107341333582032, 1316147724308250 };
@@ -2663,7 +2663,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 26), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 26, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1762568490530034, 673742465299012, 2054571050635888, 2040165159255111, 3040123733327257 };
@@ -2672,7 +2672,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 27), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 27, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1895216760098480, 1934324337975022, 3677350688973167, 2536415965456176, 714678003308640 };
@@ -2681,7 +2681,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 28), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 28, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3747620842612921, 2081794785291195, 3284594056262745, 2090090346797895, 2581692978935809 };
@@ -2690,7 +2690,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 29), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 29, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2521768507305118, 953557056811112, 2015863732865770, 1358382511861315, 2835421647899992 };
@@ -2699,7 +2699,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 30), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 30, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2611794802645686, 707234844948070, 1314059396506491, 2919250341703934, 2161831667832785 };
@@ -2708,7 +2708,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 31), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 31, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1762131062631725, 3123952634417535, 3619918390837537, 2909990877347294, 1411594230004385 };
@@ -2717,7 +2717,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 32), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 32, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1335066153744413, 2887804660779657, 2653073855954038, 2765226981667422, 938831784476763 };
@@ -2726,7 +2726,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 33), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 33, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1619646774410947, 1576090644023562, 3035228391320965, 1735328519940543, 2355324535937066 };
@@ -2735,7 +2735,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 34), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 34, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 642147846489775, 3334304977145699, 305205716788147, 2589176626729533, 2224680511484174 };
@@ -2744,7 +2744,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 35), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 35, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3360052266973635, 1843486583624091, 1561693837124349, 1084041964025479, 1866270922024009 };
@@ -2753,7 +2753,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 36), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 36, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2245948203759141, 1058306669699396, 1452898014240582, 3961024141962768, 1633235287338608 };
@@ -2762,7 +2762,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 37), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 37, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2313723935779695, 1506054666773895, 996040223525031, 636592914999692, 1497801917020297 };
@@ -2771,7 +2771,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 38), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 38, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3015041017808905, 2951823141773809, 2584865668253675, 2508192032998563, 2582137700042019 };
@@ -2780,7 +2780,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 39), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 39, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1603070202850694, 2072127623773242, 1692648737212158, 2493373404187852, 1248948672117105 };
@@ -2789,7 +2789,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 40), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 40, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1986083055103168, 691715819340300, 1361811659746933, 3459052030333434, 1063594696046061 };
@@ -2798,7 +2798,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 41), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 41, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 472016956315960, 720786972252993, 2840633661190043, 3150798753357827, 2816563335499153 };
@@ -2807,7 +2807,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 42), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 42, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3483137021572755, 1526955102024322, 2778006642704458, 457549634924205, 1097420237736736 };
@@ -2816,7 +2816,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 43), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 43, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 4144620731387879, 590179521333342, 4034023318016108, 2255745030335426, 2699746851701250 };
@@ -2825,7 +2825,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 44), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 44, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3210197754285058, 2048500453422630, 3403309827888207, 927154428508963, 4199813798872019 };
@@ -2834,7 +2834,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 45), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 45, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3129247779382818, 4415026969054274, 1900265885969643, 1528796215447059, 2172730393748688 };
@@ -2843,7 +2843,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 46), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 46, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 743138980705446, 3411117504637167, 2591389959690621, 2380042066577202, 3022267940115114 };
@@ -2852,7 +2852,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 47), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 47, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2581954631514051, 1245093644265357, 3537016673825374, 1834216551713857, 923978372152807 };
@@ -2861,7 +2861,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 48), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 48, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1996603431230215, 1191888797552937, 1207440075928499, 2765853449051137, 2525314961343288 };
@@ -2870,7 +2870,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 49), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 49, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3344544372023708, 720386671449874, 2480841360702110, 2036034126860286, 2015744690201389 };
@@ -2879,7 +2879,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 50), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 50, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2330781679120937, 376801425148230, 2032603686676107, 1488926293635130, 1317278311532959 };
@@ -2888,7 +2888,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 51), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 51, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2651184584992902, 2775702557638963, 2539786009779572, 2575974880015305, 2122619079836732 };
@@ -2897,7 +2897,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 52), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 52, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1496414019192687, 3991034436173951, 3380311659062196, 2854747485359158, 3346958036643152 };
@@ -2906,7 +2906,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 53), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 53, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2490539421551682, 1985699850375015, 2331762317128172, 4145097393776678, 2521049460190674 };
@@ -2915,7 +2915,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 54), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 54, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 2403083624110300, 2548561409802975, 2492699136535911, 2358289519456539, 3203964320363148 };
@@ -2924,7 +2924,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 55), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 55, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3666695924830668, 3585640662737501, 2372994528684236, 2628565977288995, 3482812783469694 };
@@ -2933,7 +2933,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 56), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 56, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1794955764684156, 2586904290013612, 1322647643615887, 856117964085888, 2652432778663153 };
@@ -2942,7 +2942,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 57), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 57, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1592342143350813, 3227219208247713, 2345240352078765, 2577750109932929, 2933512841197243 };
@@ -2951,7 +2951,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 58), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 58, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1346190246005805, 2052692552023851, 1718128041785940, 2491557332978474, 3474370880388305 };
@@ -2960,7 +2960,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 59), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 59, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3169895788615063, 3503097743181446, 601598510029975, 1422812237223371, 2121009661378329 };
@@ -2969,7 +2969,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 60), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 60, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1756866499986349, 911731956999969, 2707505543214075, 4006920335263786, 822501008147910 };
@@ -2978,7 +2978,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 61), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 61, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 3477749685790410, 267997399528836, 2953780922004404, 3252368924080907, 3787792887348381 };
@@ -2987,7 +2987,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 62), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 62, &s, sizeof(affine_niels_point_s));
 	}
 	{
 		field_element51_s ypx = { 1810069207599881, 1358344669503239, 1989371257548167, 2316270051121225, 3019675451276507 };
@@ -2996,7 +2996,7 @@ affine_niels_point_s* AFFINE_ODD_MULTIPLES_OF_BASEPOINT()
 		s.y_plus_x = ypx;
 		s.y_minus_x = ymx;
 		s.xy2d = xy2d;
-		memcpy(p + (sizeof(affine_niels_point_s) * 63), &s, sizeof(affine_niels_point_s));
+		memcpy(p + 63, &s, sizeof(affine_niels_point_s));
 	}
 
 	return (affine_niels_point_s*)p;
