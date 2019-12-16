@@ -1883,8 +1883,9 @@ _Bool verify011(strobe_s* signing_transctipt, uint8_t* signature, uint8_t* publi
 	// commit point
 	commit_bytes(signing_transctipt, "pk", public_key, 32);
 
-	uint8_t sigS[32], sigR[32], vsig[32];
-	signature_from_bytes(signature, sigR, sigS);
+	uint8_t sigR[32], vsig[32];
+	scalar_s sigS;
+	signature_from_bytes(signature, sigR, &sigS);
 
 	// commit point
 	commit_bytes(signing_transctipt, "no", sigR, 32);
@@ -1896,7 +1897,7 @@ _Bool verify011(strobe_s* signing_transctipt, uint8_t* signature, uint8_t* publi
 	get_edwards_point_from_pk(public_key, &negate_ep);
 	edwards_point_negate(&negate_ep, &negate_ep);
 
-	vartime_double_scalar_mul_basepoint(&k, &negate_ep, sigS, &R);
+	vartime_double_scalar_mul_basepoint(&k, &negate_ep, &sigS, &R);
 	compressed_ristretto_point_form_edwards(&R, vsig);
 
 	for (int i = 0; i < 32; i++)
