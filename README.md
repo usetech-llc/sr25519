@@ -28,8 +28,11 @@ $ docker run -it --rm cppapi /bin/sh
 
 #### Transfer some testDOTs on Alexander network
 
-The transfer API method was modified in the sr25519code branch to use C library for signing instead of Rust library. This code snippet demonstrates that:
+The transfer API method was modified in the sr25519code branch to use C library for signing instead of Rust library. This code snippet demonstrates that (see application.cpp file around lines 1398-1400):
 ```
+    // Replace SR25519 Rust version with C version 
+    //sr25519_sign(sig, te.signature.signerPublicKey, secretKeyVec.data(), signaturePayloadBytes, payloadLength);
+    sign011_s(te.signature.signerPublicKey, secretKeyVec.data(), signaturePayloadBytes, payloadLength, sig);
 ``` 
 
 In order to test, run the transfer unit test:
