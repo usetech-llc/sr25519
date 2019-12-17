@@ -29,7 +29,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
+// gcc version is 4.8 or above and system not 32 bits
+#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)) && (!(UINTPTR_MAX == 0xffffffff))
 typedef __int128 int128_t;
 typedef unsigned __int128 uint128_t;
 #else

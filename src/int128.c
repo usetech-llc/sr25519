@@ -27,7 +27,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
+// gcc version is 4.8 or above and system not 32 bits
+#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)) && (!(UINTPTR_MAX == 0xffffffff))
 
 /*
  *  Use the C compiler's native __int128 type when its available.
